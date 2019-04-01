@@ -11,6 +11,8 @@ git submodule update --recursive
 The following dependencies are used:
 - [Catch2](https://github.com/catchorg/Catch2) for testing.
 - [SDL2](https://github.com/spurious/SDL-mirror) for the game executable.
+- [glm]() for vector and matrix math.
+- [glad]() as the OpenGL loader. Generated source files are included in this repository with a custom `CMakeLists.txt`.
 
 ### SDL2
 SDL2 is currently being built from source. Make sure you have the required dependencies. To read about them you can go
@@ -21,7 +23,7 @@ SDL2 is currently being built from source. Make sure you have the required depen
 ```
 mkdir build
 cd build
-cmake .. -DBUILD_TESTS=ON
+cmake .. -DSIVOX_BUILD_TESTS=ON
 cmake --build .
 ```
 

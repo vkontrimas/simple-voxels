@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.11)
-project(simple-voxels VERSION 0.0.0 LANGUAGES CXX)
+project(simple-voxels VERSION 0.0.0 LANGUAGES C CXX)
 
 add_subdirectory(external/sdl2)
+add_subdirectory(external/glm)
+add_subdirectory(external/glad)
 
 add_subdirectory(src/engine)
 add_subdirectory(src/game)
 
-option(BUILD_TESTS OFF)
-if (BUILD_TESTS)
+option(SIVOX_BUILD_TESTS OFF)
+if (SIVOX_BUILD_TESTS)
     enable_testing()
 
     add_subdirectory(external/catch2)
