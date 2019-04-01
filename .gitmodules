@@ -1,3 +1,6 @@
 [submodule "external/catch2"]
 	path = external/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "external/sdl2"]
+	path = external/sdl2
+	url = https://github.com/spurious/SDL-mirror.git
