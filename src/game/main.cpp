@@ -1,11 +1,34 @@
 #include <iostream>
+#include <chrono>
 #include <SDL.h>
 #include <SDL_video.h>
 #include <SDL_timer.h>
 #include <SDL_events.h>
 #include <glad/glad.h>
+#include "gamestate.hpp"
+
+namespace {
+    void start() {
+        glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
+    }
+
+    void update() {
+        std::cout << "Update!\n";
+    }
+
+    void draw() {
+        glClear(GL_COLOR_BUFFER_BIT);
+        std::cout << "Frame!\n";
+    }
+}
 
 int main(int argc, char *argv[]) {
+    /*
+     * - initialize SDL
+     * - create a window
+     * - create an OpenGL context
+     * - load OpenGL
+     */
     int sdl_status = SDL_Init(SDL_INIT_VIDEO);
     if (sdl_status != 0) {
         std::cerr << "Failed to initialize SDL!" << std::endl;
@@ -38,8 +61,26 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
+    /*
+     * Game loop.
+     *
+     * | start()
+     *   while running:
+     *   | Poll events
+     *   | Update
+     *   | Draw
+     *   | Swap buffers
+     * |
+     */
+    constexpr int UPDATES_PER_SECOND = 60;
+    constexpr double UPDATE_TIME = 1.0 / UPDATES_PER_SECOND;
 
+    using clock = std::chrono::high_resolution_clock;
+    auto previous_iteration_time = clock::now();
+
+    double update_lag = UPDATE_TIME;
+
+    start();
     bool running = true;
     while (running) {
         SDL_Event event = {};
@@ -58,11 +99,26 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        auto now = clock::now();
+        double delta = std::chrono::duration<double>(now - previous_iteration_time).count();
+        previous_iteration_time = now;
 
+        update_lag += delta;
+        while (update_lag >= UPDATE_TIME) {
+            update();
+            update_lag -= UPDATE_TIME;
+        }
+
+        draw();
         SDL_GL_SwapWindow(window);
     }
 
+    /*
+     * Clean up:
+     * - delete OpenGL context
+     * - delete window
+     * - close SDL
+     */
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
