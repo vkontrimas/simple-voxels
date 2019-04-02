@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_video.h>
+#include <SDL_timer.h>
 #include <glad/glad.h>
 
 int main(int argc, char *argv[]) {
@@ -36,9 +37,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     SDL_GL_SwapWindow(window);
+
+    SDL_Delay(5000);
 
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);

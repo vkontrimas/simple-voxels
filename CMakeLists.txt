@@ -1,13 +1,28 @@
+################################################################################
+# Config                                                                       #
+################################################################################
 cmake_minimum_required(VERSION 3.11)
 project(simple-voxels VERSION 0.0.0 LANGUAGES C CXX)
 
+# Directory to which the game files are copied.
+set(SIVOX_GAME_OUTPUT ${CMAKE_BINARY_DIR}/game)
+
+################################################################################
+# External libraries                                                           #
+################################################################################
 add_subdirectory(external/sdl2)
 add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 
+################################################################################
+# Modules                                                                      #
+################################################################################
 add_subdirectory(src/engine)
 add_subdirectory(src/game)
 
+################################################################################
+# Unit testing                                                                 #
+################################################################################
 option(SIVOX_BUILD_TESTS OFF)
 if (SIVOX_BUILD_TESTS)
     enable_testing()
