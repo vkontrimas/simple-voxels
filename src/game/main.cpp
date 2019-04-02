@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_video.h>
 #include <SDL_timer.h>
+#include <SDL_events.h>
 #include <glad/glad.h>
 
 int main(int argc, char *argv[]) {
@@ -38,10 +39,29 @@ int main(int argc, char *argv[]) {
     }
 
     glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    SDL_GL_SwapWindow(window);
 
-    SDL_Delay(5000);
+    bool running = true;
+    while (running) {
+        SDL_Event event = {};
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+            case SDL_QUIT:
+                running = false;
+                break;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                    running = false;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        SDL_GL_SwapWindow(window);
+    }
 
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
