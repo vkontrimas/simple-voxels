@@ -23,7 +23,9 @@ SDL2 is currently being built from source. Make sure you have the required depen
 ```
 mkdir build
 cd build
-cmake .. -DSIVOX_BUILD_TESTS=ON
+cmake .. -DSIVOX_BUILD_TESTS=ON -DGLM_TEST_ENABLE=OFF
 cmake --build .
 ```
 
+- `SIVOX_BUILD_TESTS=ON` enables the engine unit tests.
+- `GLM_TEST_ENABLE=OFF` disables unit tests from the glm library.
