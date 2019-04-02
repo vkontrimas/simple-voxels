@@ -1,7 +1,5 @@
 #include <iostream>
 #include <SDL.h>
-// #undef main
-
 #include <SDL_video.h>
 #include <glad/glad.h>
 
