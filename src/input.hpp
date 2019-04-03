@@ -6,6 +6,7 @@
 #include <array>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 /*
  * TODO: Work on getting rid of these SDL includes.
@@ -592,6 +593,27 @@ namespace sivox {
         };
     };
 
+    static inline bool operator==(Input a, Input b) {
+        if (a.type() == b.type()) {
+            switch (a.type()) {
+            case Input::KeyboardKeyCode:
+                return a.keycode() == b.keycode();
+            case Input::KeyboardScanCode:
+                return a.scancode() == b.scancode();
+            default:
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    static inline bool operator!=(Input a, Input b) {
+        return !(a == b);
+    }
+
+
     /*
      * Processes user input.
      * Allows arbitrary buttons and axes to be mapped to inputs.
@@ -601,14 +623,50 @@ namespace sivox {
         void process_sdl_event(SDL_Event const& event);
         void update();
 
-        template<class T> inline void map_button(T button, Input input) {}
+        template<class T> inline void map_button(T button, Input input) {
+            int index = static_cast<int>(button);
+            if (index >= 0) {
+                if (index >= m_buttons.size()) {
+                    m_buttons.resize(index + 1);
+                }
 
-        template<class T> inline bool button_down(T button) { return false; }
-        template<class T> inline bool button_up(T button) { return false; }
-        template<class T> inline bool button_pressed(T button) { return false; }
-        template<class T> inline bool button_released(T button) { return false; }
+                auto existing_input = std::find(
+                    m_buttons[index].inputs.begin(),
+                    m_buttons[index].inputs.end(),
+                    input
+                );
+
+                if (existing_input == m_buttons[index].inputs.end()) {
+                    m_buttons[index].inputs.push_back(input);
+                }
+            }
+        }
+
+        template<class T> inline bool button_down(T button) {
+            int index = static_cast<int>(button);
+            return index >= 0 && index < m_buttons.size() && m_buttons[index].down;
+        }
+
+        template<class T> inline bool button_up(T button) {
+            int index = static_cast<int>(button);
+            return index >= 0 && index < m_buttons.size() && !m_buttons[index].down;
+        }
+
+        template<class T> inline bool button_pressed(T button) {
+            int index = static_cast<int>(button);
+            return index >= 0 && index < m_buttons.size() && m_buttons[index].down && !m_buttons[index].down_previously;
+        }
+
+        template<class T> inline bool button_released(T button) {
+            int index = static_cast<int>(button);
+            return index >= 0 && index < m_buttons.size() && !m_buttons[index].down && m_buttons[index].down_previously;
+        }
         
-        template<class T> inline std::vector<Input> const& button_inputs(T button) { return {}; }
+        template<class T> inline std::vector<Input> const& button_inputs(T button) { 
+            int index = static_cast<int>(button);
+            if (index >= 0 && index < m_buttons.size()) { return m_buttons[index].inputs; }
+            else { return m_empty_input_vec; }
+        }
 
     private:
         struct ButtonMapping {
@@ -617,6 +675,7 @@ namespace sivox {
             bool down_previously = false;
         };
         std::vector<ButtonMapping> m_buttons;
+        const std::vector<Input> m_empty_input_vec;
     };
 }
 

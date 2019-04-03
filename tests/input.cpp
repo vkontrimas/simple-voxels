@@ -4,26 +4,6 @@
 
 using namespace sivox;
 
-static inline bool operator==(Input a, Input b) {
-    if (a.type() == b.type()) {
-        switch (a.type()) {
-        case Input::KeyboardKeyCode:
-            return a.keycode() == b.keycode();
-        case Input::KeyboardScanCode:
-            return a.scancode() == b.scancode();
-        default:
-            INFO("Operator == not implemented for this Input::type() value!");
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-}
-static inline bool operator!=(Input a, Input b) {
-    return !(a == b);
-}
-
 
 TEST_CASE("Input : KeyCode", "[input]") {
     std::vector<KeyCode> keycodes = {
