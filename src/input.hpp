@@ -5,6 +5,8 @@
 
 #include <array>
 #include <vector>
+#include <cassert>
+
 /*
  * TODO: Work on getting rid of these SDL includes.
  * For keycodes and scancodes we just need to take the actual values and plop them into our enums.
@@ -553,11 +555,68 @@ namespace sivox {
          */
         Count = 512  
     };
-
+    
+    /*
+     * Represents an Input that can be mapped to a button or an axis.
+     * Currently only keyboard keycodes and scancodes are supported.
+     *
+     * KeyCode and ScanCode values are implicitly converted to an Input.
+     */
     class Input {
+    public:
+        enum Type {
+            KeyboardScanCode,
+            KeyboardKeyCode
+        };
+
+        Input(KeyCode keycode) : m_type(KeyboardKeyCode), m_keycode(keycode) {}
+        Input(ScanCode scancode) : m_type(KeyboardScanCode), m_scancode(scancode) {}
+
+        Type type() const { return m_type; }
+
+        ScanCode scancode() const {
+            if (type() == KeyboardScanCode) { return m_scancode; }
+            else { return ScanCode::Unknown; }
+        }
+
+        KeyCode keycode() const {
+            if (type() == KeyboardKeyCode) { return m_keycode; }
+            else { return KeyCode::Unknown; }
+        }
+
+    private:
+        Type m_type;
+        union {
+            ScanCode m_scancode;
+            KeyCode  m_keycode;
+        };
+    };
+
+    /*
+     * Processes user input.
+     * Allows arbitrary buttons and axes to be mapped to inputs.
+     */
+    class InputHandler {
     public:
         void process_sdl_event(SDL_Event const& event);
         void update();
+
+        template<class T> inline void map_button(T button, Input input) {}
+
+        template<class T> inline bool button_down(T button) { return false; }
+        template<class T> inline bool button_up(T button) { return false; }
+        template<class T> inline bool button_pressed(T button) { return false; }
+        template<class T> inline bool button_released(T button) { return false; }
+        
+        template<class T> inline std::vector<Input> const& button_inputs(T button) { return {}; }
+
+    private:
+        struct ButtonMapping {
+            std::vector<Input> inputs;
+            bool down = false;
+            bool down_previously = false;
+        };
+        std::vector<ButtonMapping> m_buttons;
     };
 }
 
