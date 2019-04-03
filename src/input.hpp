@@ -276,13 +276,6 @@ namespace sivox {
 
         AudioRewind = SDLK_AUDIOREWIND,
         AudioFastForward = SDLK_AUDIOFASTFORWARD,
-
-        /*
-         * Not an actual keycode.
-         * Just a value used to get the upper bound of the KeyCode count.
-         * (The actual number of keycodes may be lower. This is just the last value + 1.)
-         */
-        Count 
     };
 
     /*
@@ -599,20 +592,21 @@ namespace sivox {
 
     sivox_test(private):
         struct ButtonMapping {
-            int buttonValue = -1;
-            bool inUse = false;
+            int value = -1;
+            bool in_use = false;
 
             int code = -1;
-            bool useScancode = false;
+            bool use_scancode = false;
 
             bool down = false; 
             bool pressed = false;
             bool released = false;
+
+            bool prev_down = false;
         };
         std::vector<ButtonMapping> m_buttons;
 
     private:
-        std::array<bool, static_cast<int>(KeyCode::Count)> m_keycode_state;
         std::array<bool, static_cast<int>(ScanCode::Count)> m_scancode_state;
 
         void map_button(int value, int code, bool use_scancode);
@@ -620,6 +614,8 @@ namespace sivox {
         bool button_up(int value);
         bool button_pressed(int value);
         bool button_released(int value);
+
+        void keyboard_event(SDL_KeyboardEvent const& e);
     };
 }
 
