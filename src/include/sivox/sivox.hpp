@@ -1,9 +1,0 @@
-#pragma once
-#ifndef SIMPLE_VOXELS_INLCUDE_SIVOX_HPP
-#define SIMPLE_VOXELS_INLCUDE_SIVOX_HPP
-
-namespace sivox {
-
-}
-
-#endif /*SIMPLE_VOXELS_INLCUDE_SIVOX_HPP*/

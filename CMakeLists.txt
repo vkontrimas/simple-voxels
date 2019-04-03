@@ -15,10 +15,9 @@ add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 
 ################################################################################
-# Modules                                                                      #
+# Source code                                                                  #
 ################################################################################
-add_subdirectory(src/engine)
-add_subdirectory(src/game)
+add_subdirectory(src)
 
 ################################################################################
 # Unit testing                                                                 #
