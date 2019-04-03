@@ -557,65 +557,7 @@ namespace sivox {
     class Input {
     public:
         void process_sdl_event(SDL_Event const& event);
-
         void update();
-
-        template<typename ENUMTYPE>
-        inline void map_button(ENUMTYPE value, KeyCode code) {
-            return map_button(static_cast<int>(value), static_cast<int>(code), false);
-        }
-
-        template<typename ENUMTYPE>
-        inline void map_button(ENUMTYPE value, ScanCode code) {
-            return map_button(static_cast<int>(value), static_cast<int>(code), true);
-        }
-
-        template<typename ENUMTYPE>
-        inline bool button_down(ENUMTYPE value) {
-            return button_down(static_cast<int>(value));
-        }
-
-        template<typename ENUMTYPE>
-        inline bool button_up(ENUMTYPE value) {
-            return button_up(static_cast<int>(value));
-        }
-
-        template<typename ENUMTYPE>
-        inline bool button_pressed(ENUMTYPE value) {
-            return button_pressed(static_cast<int>(value));
-        }
-
-        template<typename ENUMTYPE>
-        inline bool button_released(ENUMTYPE value) {
-            return button_released(static_cast<int>(value));
-        }
-
-    sivox_test(private):
-        struct ButtonMapping {
-            int value = -1;
-            bool in_use = false;
-
-            int code = -1;
-            bool use_scancode = false;
-
-            bool down = false; 
-            bool pressed = false;
-            bool released = false;
-
-            bool prev_down = false;
-        };
-        std::vector<ButtonMapping> m_buttons;
-
-    private:
-        std::array<bool, static_cast<int>(ScanCode::Count)> m_scancode_state;
-
-        void map_button(int value, int code, bool use_scancode);
-        bool button_down(int value);
-        bool button_up(int value);
-        bool button_pressed(int value);
-        bool button_released(int value);
-
-        void keyboard_event(SDL_KeyboardEvent const& e);
     };
 }
 
