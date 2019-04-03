@@ -1,6 +1,7 @@
 #pragma once
 #ifndef SIVOX_GAME_INPUT_HPP
 #define SIVOX_GAME_INPUT_HPP
+#include "common.hpp"
 
 #include <array>
 #include <vector>
@@ -568,17 +569,22 @@ namespace sivox {
 
         template<typename ENUMTYPE>
         inline void map_button(ENUMTYPE value, KeyCode code) {
-            return map_button(static_cast<int>(value), code, false);
+            return map_button(static_cast<int>(value), static_cast<int>(code), false);
         }
 
         template<typename ENUMTYPE>
         inline void map_button(ENUMTYPE value, ScanCode code) {
-            return map_button(static_cast<int>(value), code, true);
+            return map_button(static_cast<int>(value), static_cast<int>(code), true);
         }
 
         template<typename ENUMTYPE>
         inline bool button_down(ENUMTYPE value) {
             return button_down(static_cast<int>(value));
+        }
+
+        template<typename ENUMTYPE>
+        inline bool button_up(ENUMTYPE value) {
+            return button_up(static_cast<int>(value));
         }
 
         template<typename ENUMTYPE>
@@ -591,7 +597,7 @@ namespace sivox {
             return button_released(static_cast<int>(value));
         }
 
-    private:
+    sivox_test(private):
         struct ButtonMapping {
             int buttonValue = -1;
             bool inUse = false;
@@ -605,11 +611,13 @@ namespace sivox {
         };
         std::vector<ButtonMapping> m_buttons;
 
+    private:
         std::array<bool, static_cast<int>(KeyCode::Count)> m_keycode_state;
         std::array<bool, static_cast<int>(ScanCode::Count)> m_scancode_state;
 
         void map_button(int value, int code, bool use_scancode);
         bool button_down(int value);
+        bool button_up(int value);
         bool button_pressed(int value);
         bool button_released(int value);
     };

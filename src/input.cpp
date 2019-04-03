@@ -13,6 +13,10 @@ namespace sivox {
 
     }
 
+    bool Input::button_up(int value) {
+        return false;
+    }
+
     bool Input::button_down(int value) {
         return false;
     }
