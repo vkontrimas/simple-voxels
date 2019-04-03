@@ -2,6 +2,7 @@ set(
     GAME_SOURCE
     main.cpp
     gamestate.hpp
+    input.hpp
 )
 
 add_executable(game WIN32 ${GAME_SOURCE})
