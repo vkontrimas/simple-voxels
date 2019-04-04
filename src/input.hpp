@@ -617,6 +617,8 @@ namespace sivox {
      */
     class InputHandler {
     public:
+        InputHandler();
+
         void keyboard_event(KeyCode keycode, ScanCode scancode, Input::KeyboardEvent e);
         void update();
 
@@ -673,6 +675,8 @@ namespace sivox {
         };
         std::vector<ButtonMapping> m_buttons;
         const std::vector<Input> m_empty_input_vec;
+
+        std::array<bool, static_cast<int>(ScanCode::Count)> m_scancodes;
     };
 }
 
