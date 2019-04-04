@@ -44,11 +44,21 @@ namespace sivox {
         static constexpr int height = 32;
         static constexpr int volume = width * width * height;
 
-        Block block(Position p) const { return {}; }
-        void set_block(Position p, Block block) {}
+        Block block(Position p) const { 
+            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < width) { return m_data[block_index(p)]; }
+            else { return 0; }
+        }
+
+        void set_block(Position p, Block block) {
+            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < width) { m_data[block_index(p)] = block; }
+        }
 
     private:
         std::array<Block, volume> m_data;
+
+        int block_index(Position p) const {
+            return p.y + (p.x * height) + (p.z * width * height);
+        }
     };
 }
 
