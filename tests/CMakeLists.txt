@@ -5,6 +5,7 @@ set(
     TEST_SOURCES
     main.cpp
     input.cpp
+    voxelterrain.cpp
 )
 add_executable(testgame ${TEST_SOURCES})
 # target_include_directories(testgame PRIVATE $<TARGET_PROPERTY:game,SOURCE_DIR>)

@@ -4,6 +4,7 @@ set(
     gamestate.hpp
     input.hpp
     input.cpp
+    voxelterrain.hpp
 )
 
 set(GAME_LIBRARIES SDL2 glm glad)
