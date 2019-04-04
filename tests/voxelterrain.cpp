@@ -22,6 +22,23 @@ static std::ostream &operator<<(std::ostream &stream, Position p) {
     return stream;
 }
 
+static std::ostream &operator<<(std::ostream &stream, Chunk::Iterator::Value val) {
+    stream << "[Value "
+           << val.position
+           << " "
+           << val.block
+           << "]";
+    return stream;
+}
+
+static bool operator==(Chunk::Iterator::Value a, Chunk::Iterator::Value b) {
+    return a.position == b.position && a.block == b.block;
+}
+
+static bool operator!=(Chunk::Iterator::Value a, Chunk::Iterator::Value b) {
+    return !(a == b);
+}
+
 static void chunk_for_each(std::function<void(Position)> func) {
     for (int x = 0; x < Chunk::width; ++x) {
         for (int z = 0; z < Chunk::width; ++z) {
@@ -48,6 +65,30 @@ TEST_CASE("Chunk : Initialize", "[terrain][blocks][chunks]") {
     chunk_for_each([&chunk](Position pos) {
         REQUIRE(chunk.block(pos) == 0);
     });
+}
+
+TEST_CASE("Chunk : Iterator (all blocks)", "[terrain][blocks][chunks]") {
+    using Catch::Equals;
+    Chunk chunk;
+
+    std::vector<Chunk::Iterator::Value> expected;
+    for (int z = 0; z < Chunk::width; ++z) {
+        for (int x = 0; x < Chunk::width; ++x) {
+            for (int y = 0; y < Chunk::height; ++y) {
+                expected.push_back({ { x, y, z }, 0 });
+            }
+        }
+    }
+
+    std::vector<Chunk::Iterator::Value> result;
+    for (auto value : chunk) {
+        result.push_back(*value);
+    }
+
+    REQUIRE(expected.size() == result.size());
+    for (int i = 0; i < expected.size(); ++i) {
+        REQUIRE(expected[i] == result[i]);
+    }
 }
 
 TEST_CASE("Chunk : Fill", "[terrain][blocks][chunks]") {
