@@ -677,6 +677,7 @@ namespace sivox {
         const std::vector<Input> m_empty_input_vec;
 
         std::array<bool, static_cast<int>(ScanCode::Count)> m_scancodes;
+        std::vector<KeyCode> m_keycodes;
     };
 }
 
