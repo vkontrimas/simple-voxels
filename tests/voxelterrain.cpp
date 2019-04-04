@@ -82,7 +82,7 @@ TEST_CASE("Chunk : Iterator (all blocks)", "[terrain][blocks][chunks]") {
 
     std::vector<Chunk::Iterator::Value> result;
     for (auto value : chunk) {
-        result.push_back(*value);
+        result.push_back(value);
     }
 
     REQUIRE(expected.size() == result.size());

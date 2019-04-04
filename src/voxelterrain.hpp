@@ -61,6 +61,7 @@ namespace sivox {
         /*
          * Iterator returned by begin and end used to go through every block in the chunk.
          * Dereferences to a Value type containing the block position and the block itself.
+         * This iterator is pretty much read only.
          */
         class Iterator {
         public:
@@ -69,36 +70,64 @@ namespace sivox {
                 Block block;
             };
 
-            Value *operator->() { return nullptr; }
-            Value const* operator->() const { return nullptr; }
+            Iterator(std::array<Block, volume> *data, int pos) : m_data(data), m_position(pos) {}
 
-            Value *operator*() { return nullptr; }
-            Value const* operator*() const { return nullptr; }
+            Value operator->() const { 
+                return {
+                    block_position(m_position),
+                    (*m_data)[m_position]
+                };
+            }
 
-            Iterator &operator++() { return *this; }
-            Iterator operator++(int) { return {}; }
+            Value operator*() const { 
+                return {
+                    block_position(m_position),
+                    (*m_data)[m_position]
+                };
+            }
+
+            Iterator &operator++() { 
+                m_position++;
+                return *this; 
+            }
+
+            Iterator operator++(int) { 
+                m_position++;
+                return *this;
+            }
 
             friend bool operator==(Iterator a, Iterator b);
             friend bool operator!=(Iterator a, Iterator b);
+
+        private:
+            std::array<Block, volume> *m_data;
+            int m_position;
         };
 
-        Iterator begin() { return {}; }
-        Iterator end() { return {}; }
+        Iterator begin() { return Iterator(&m_data, 0); }
+        Iterator end() { return Iterator(&m_data, volume); }
 
     private:
         std::array<Block, volume> m_data;
 
-        int block_index(Position p) const {
+        static int block_index(Position p) {
             return p.y + (p.x * height) + (p.z * width * height);
+        }
+
+        static Position block_position(int index) {
+            int y = (index % (width * height)) % height;
+            int x = ((index % (width * height)) - y) / height;
+            int z = (index - x - y) / (width * height);
+            return {x, y, z};
         }
     };
 
     inline bool operator==(Chunk::Iterator a, Chunk::Iterator b) {
-        return false;
+        return a.m_data && b.m_data && a.m_position == b.m_position && a.m_data == b.m_data;
     }
 
     inline bool operator!=(Chunk::Iterator a, Chunk::Iterator b) {
-        return false;
+        return !(a == b);
     }
 
 }
