@@ -641,27 +641,27 @@ namespace sivox {
             }
         }
 
-        template<class T> inline bool button_down(T button) {
+        template<class T> inline bool button_down(T button) const {
             int index = static_cast<int>(button);
             return index >= 0 && index < m_buttons.size() && m_buttons[index].down;
         }
 
-        template<class T> inline bool button_up(T button) {
+        template<class T> inline bool button_up(T button) const {
             int index = static_cast<int>(button);
             return index >= 0 && index < m_buttons.size() && !m_buttons[index].down;
         }
 
-        template<class T> inline bool button_pressed(T button) {
+        template<class T> inline bool button_pressed(T button) const {
             int index = static_cast<int>(button);
             return index >= 0 && index < m_buttons.size() && m_buttons[index].down && !m_buttons[index].down_previously;
         }
 
-        template<class T> inline bool button_released(T button) {
+        template<class T> inline bool button_released(T button) const {
             int index = static_cast<int>(button);
             return index >= 0 && index < m_buttons.size() && !m_buttons[index].down && m_buttons[index].down_previously;
         }
         
-        template<class T> inline std::vector<Input> const& button_inputs(T button) { 
+        template<class T> inline std::vector<Input> const& button_inputs(T button) const { 
             int index = static_cast<int>(button);
             if (index >= 0 && index < m_buttons.size()) { return m_buttons[index].inputs; }
             else { return m_empty_input_vec; }
