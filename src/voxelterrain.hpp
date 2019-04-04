@@ -36,11 +36,6 @@ namespace sivox {
     inline bool operator!=(Block a, Block b) { return !(a == b); }
 
     /*
-     * An iterator returned by Chunk::begin and Chunk::end, used to iterate over every block in the chunk.
-     * Dereferences to [ChunkIterator::Value] which contains the position and a reference to the block in question.
-     */
-
-    /*
      * Represents a small volume of the world.
      */
     class Chunk {
@@ -65,6 +60,7 @@ namespace sivox {
          */
         class Iterator {
         public:
+            // TODO: Should we make the fields in Chunk::Iterator::Value const?
             struct Value {
                 Position position;
                 Block block;
