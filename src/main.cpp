@@ -6,6 +6,9 @@
 #include <SDL_events.h>
 #include <glad/glad.h>
 #include "gamestate.hpp"
+#include "input.hpp" 
+
+using namespace sivox;
 
 namespace {
     void start() {
@@ -62,6 +65,15 @@ int main(int argc, char *argv[]) {
     }
 
     /*
+     * Input handler
+     */
+    enum class Button {
+        Close
+    };
+    InputHandler input;
+    input.map_button(Button::Close, ScanCode::Escape);
+
+    /*
      * Game loop.
      *
      * | start()
@@ -94,9 +106,23 @@ int main(int argc, char *argv[]) {
                     running = false;
                 }
                 break;
+            case SDL_KEYUP:
+            case SDL_KEYDOWN: 
+                input.keyboard_event(
+                    static_cast<KeyCode>(event.key.keysym.sym),
+                    static_cast<ScanCode>(event.key.keysym.scancode),
+                    event.type == SDL_KEYUP ? Input::Up : Input::Down
+                );
+                break;
             default:
                 break;
             }
+        }
+        input.update();
+
+        if (input.button_pressed(Button::Close)) {
+            running = false;
+            break;
         }
 
         auto now = clock::now();
