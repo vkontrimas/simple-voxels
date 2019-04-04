@@ -95,4 +95,172 @@ TEST_CASE("InputHandler : map_button", "[input]") {
     REQUIRE_FALSE(input.button_released(button_index));
 }
 
-// TODO: Test input somehow.
+TEST_CASE("InputHandler : keyboard input (scancode)", "[input]") {
+    using Catch::Equals;
+
+    /*
+     * Register buttons
+     */
+    enum class Button {
+        A,
+        B,
+        C
+    };
+
+    InputHandler input;
+    input.map_button(Button::A, ScanCode::A);
+    input.map_button(Button::B, ScanCode::B);
+    input.map_button(Button::C, ScanCode::C);
+
+    INFO("All buttons up initially...");
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("All buttons still up after update with no inputs.");
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("All buttons still up after update with unrelated inputs.");
+    input.keyboard_event(KeyCode::D, ScanCode::D, Input::Down);
+    input.keyboard_event(KeyCode::G, ScanCode::G, Input::Down);
+    input.keyboard_event(KeyCode::Num4, ScanCode::Num4, Input::Down);
+    input.keyboard_event(KeyCode::Up, ScanCode::Up, Input::Down);
+    input.keyboard_event(KeyCode::F, ScanCode::F, Input::Down);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release unrelated inputs and press A");
+    input.keyboard_event(KeyCode::D, ScanCode::D, Input::Up);
+    input.keyboard_event(KeyCode::G, ScanCode::G, Input::Up);
+    input.keyboard_event(KeyCode::Num4, ScanCode::Num4, Input::Up);
+    input.keyboard_event(KeyCode::Up, ScanCode::Up, Input::Up);
+    input.keyboard_event(KeyCode::F, ScanCode::F, Input::Up);
+    input.keyboard_event(KeyCode::A, ScanCode::A, Input::Down);
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Press B. (A is still being held down.)");
+    input.keyboard_event(KeyCode::B, ScanCode::B, Input::Down);
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Update with no changes. A and B both still held.");
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release A. B is still being held.");
+    input.keyboard_event(KeyCode::A, ScanCode::A, Input::Up);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release B.");
+    input.keyboard_event(KeyCode::B, ScanCode::B, Input::Up);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Do nothing. All buttons should be up.");
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+}
+
+TEST_CASE("InputHandler : keyboard input (keycode)", "[input]") {
+    using Catch::Equals;
+
+    /*
+     * Register buttons
+     */
+    enum class Button {
+        A,
+        B,
+        C
+    };
+
+    InputHandler input;
+    input.map_button(Button::A, KeyCode::A);
+    input.map_button(Button::B, KeyCode::B);
+    input.map_button(Button::C, KeyCode::C);
+
+    INFO("All buttons up initially...");
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("All buttons still up after update with no inputs.");
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("All buttons still up after update with unrelated inputs.");
+    input.keyboard_event(KeyCode::D, ScanCode::D, Input::Down);
+    input.keyboard_event(KeyCode::G, ScanCode::G, Input::Down);
+    input.keyboard_event(KeyCode::Num4, ScanCode::Num4, Input::Down);
+    input.keyboard_event(KeyCode::Up, ScanCode::Up, Input::Down);
+    input.keyboard_event(KeyCode::F, ScanCode::F, Input::Down);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release unrelated inputs and press A");
+    input.keyboard_event(KeyCode::D, ScanCode::D, Input::Up);
+    input.keyboard_event(KeyCode::G, ScanCode::G, Input::Up);
+    input.keyboard_event(KeyCode::Num4, ScanCode::Num4, Input::Up);
+    input.keyboard_event(KeyCode::Up, ScanCode::Up, Input::Up);
+    input.keyboard_event(KeyCode::F, ScanCode::F, Input::Up);
+    input.keyboard_event(KeyCode::A, ScanCode::A, Input::Down);
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Press B. (A is still being held down.)");
+    input.keyboard_event(KeyCode::B, ScanCode::B, Input::Down);
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Update with no changes. A and B both still held.");
+    input.update();
+    REQUIRE(input.button_down(Button::A)); REQUIRE_FALSE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release A. B is still being held.");
+    input.keyboard_event(KeyCode::A, ScanCode::A, Input::Up);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE(input.button_released(Button::A));
+    REQUIRE(input.button_down(Button::B)); REQUIRE_FALSE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Release B.");
+    input.keyboard_event(KeyCode::B, ScanCode::B, Input::Up);
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+
+    INFO("Do nothing. All buttons should be up.");
+    input.update();
+    REQUIRE_FALSE(input.button_down(Button::A)); REQUIRE(input.button_up(Button::A)); REQUIRE_FALSE(input.button_pressed(Button::A)); REQUIRE_FALSE(input.button_released(Button::A));
+    REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
+    REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
+}

@@ -557,6 +557,11 @@ namespace sivox {
      */
     class Input {
     public:
+        enum KeyboardEvent {
+            Up,
+            Down
+        };
+
         enum Type {
             KeyboardScanCode,
             KeyboardKeyCode
@@ -612,6 +617,7 @@ namespace sivox {
      */
     class InputHandler {
     public:
+        void keyboard_event(KeyCode keycode, ScanCode scancode, Input::KeyboardEvent e);
         void update();
 
         template<class T> inline void map_button(T button, Input input) {
