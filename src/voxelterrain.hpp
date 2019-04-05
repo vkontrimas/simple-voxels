@@ -67,7 +67,7 @@ namespace sivox {
                 Block block;
             };
 
-            Iterator(std::array<Block, volume> *data, int pos) : m_data(data), m_position(pos) {}
+            Iterator(std::array<Block, volume> const* data, int pos) : m_data(data), m_position(pos) {}
 
             Value operator->() const { 
                 return {
@@ -102,12 +102,12 @@ namespace sivox {
             }
 
         private:
-            std::array<Block, volume> *m_data;
+            std::array<Block, volume> const* m_data;
             int m_position;
         };
 
-        Iterator begin() { return Iterator(&m_data, 0); }
-        Iterator end() { return Iterator(&m_data, volume); }
+        Iterator begin() const { return Iterator(&m_data, 0); }
+        Iterator end() const { return Iterator(&m_data, volume); }
 
     private:
         std::array<Block, volume> m_data;
