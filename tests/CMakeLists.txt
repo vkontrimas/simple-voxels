@@ -12,7 +12,7 @@ add_executable(testgame ${TEST_SOURCES})
 # target_include_directories(testgame PRIVATE $<TARGET_PROPERTY:game,SOURCE_DIR>)
 # TODO: Get rid of SDL2 linkage
 target_link_libraries(testgame PRIVATE Catch2::Catch2 gametestlib)
-target_compile_features(testgame PRIVATE cxx_std_11)
+target_compile_features(testgame PRIVATE cxx_std_17)
 
 add_custom_command(
     TARGET testgame

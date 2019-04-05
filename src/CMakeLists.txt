@@ -10,7 +10,7 @@ set(
 )
 
 set(GAME_LIBRARIES SDL2 glm glad)
-set(GAME_FEATUERS cxx_std_11)
+set(GAME_FEATURES cxx_std_17)
 
 add_executable(game WIN32 main.cpp ${GAME_SOURCE})
 target_link_libraries(game PRIVATE SDL2main ${GAME_LIBRARIES})
