@@ -38,10 +38,11 @@ namespace sivox {
     /*
      * Represents a small volume of the world.
      */
-    class Chunk {
+    template<int WIDTH, int HEIGHT>
+    class ChunkTemplate {
     public:
-        static constexpr int width  = 32;
-        static constexpr int height = 32;
+        static constexpr int width  = WIDTH;
+        static constexpr int height = HEIGHT;
         static constexpr int volume = width * width * height;
 
         Block block(Position p) const { 
@@ -92,8 +93,13 @@ namespace sivox {
                 return *this;
             }
 
-            friend bool operator==(Iterator a, Iterator b);
-            friend bool operator!=(Iterator a, Iterator b);
+            friend bool operator==(Iterator a, Iterator b) {
+                return a.m_data && b.m_data && a.m_position == b.m_position && a.m_data == b.m_data;
+            }
+
+            friend bool operator!=(Iterator a, Iterator b) {
+                return !(a == b);
+            }
 
         private:
             std::array<Block, volume> *m_data;
@@ -118,14 +124,7 @@ namespace sivox {
         }
     };
 
-    inline bool operator==(Chunk::Iterator a, Chunk::Iterator b) {
-        return a.m_data && b.m_data && a.m_position == b.m_position && a.m_data == b.m_data;
-    }
-
-    inline bool operator!=(Chunk::Iterator a, Chunk::Iterator b) {
-        return !(a == b);
-    }
-
+    using Chunk = ChunkTemplate<32, 32>;
 }
 
 #endif // SIVOX_GAME_VOXELTERRAIN_HPP
