@@ -6,6 +6,7 @@ set(
     main.cpp
     input.cpp
     voxelterrain.cpp
+    meshgenerator.cpp
 )
 add_executable(testgame ${TEST_SOURCES})
 # target_include_directories(testgame PRIVATE $<TARGET_PROPERTY:game,SOURCE_DIR>)

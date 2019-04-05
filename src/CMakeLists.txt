@@ -5,6 +5,8 @@ set(
     input.hpp
     input.cpp
     voxelterrain.hpp
+    meshgenerator.hpp
+    meshgenerator.cpp
 )
 
 set(GAME_LIBRARIES SDL2 glm glad)
