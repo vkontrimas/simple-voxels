@@ -9,6 +9,8 @@ set(
     meshgenerator.cpp
     ioutils.hpp
     ioutils.cpp
+    shader.hpp
+    shader.cpp
 )
 
 set(GAME_LIBRARIES SDL2 glm glad)
