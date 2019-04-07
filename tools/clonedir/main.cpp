@@ -28,6 +28,29 @@ bool check_dir(fs::path const& path) {
     return true;
 }
 
+void remove_extras(fs::path const& path, fs::path const& source_dir, fs::path const& target_dir) {
+    for (auto const& entry : fs::directory_iterator(path)) {
+        fs::path target_path = entry.path();
+        fs::path source_path = source_dir / entry.path().lexically_relative(target_dir);
+
+        if (fs::exists(source_path)) {
+            if (fs::is_directory(target_path)) {
+                if (fs::is_directory(source_path)) {
+                    remove_extras(target_path, source_dir, target_dir);
+                }
+                else {
+                    std::cout << "Removing " << target_path << "..." << std::endl;
+                    fs::remove_all(target_path);
+                }
+            }
+        }
+        else {
+            std::cout << "Removing " << target_path << "..." << std::endl;
+            fs::remove_all(target_path);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc == 3) {
         fs::path source_dir(argv[1]);
@@ -35,6 +58,9 @@ int main(int argc, char **argv) {
 
         bool source_ok = check_dir(source_dir);
         if (source_ok) {
+            if (fs::exists(target_dir)) {
+                remove_extras(target_dir, source_dir, target_dir);
+            }
             fs::copy(
                 source_dir, 
                 target_dir, 
@@ -42,15 +68,6 @@ int main(int argc, char **argv) {
                 fs::copy_options::update_existing |
                 fs::copy_options::skip_symlinks
             );
-
-            for (auto const& entry : fs::recursive_directory_iterator(target_dir)) {
-                fs::path target_path = entry.path();
-                fs::path source_path = source_dir / entry.path().lexically_relative(target_dir);
-
-                if (!fs::exists(source_path)) {
-                    fs::remove_all(target_path);
-                }
-            }
         }
         else {
             return 1;
