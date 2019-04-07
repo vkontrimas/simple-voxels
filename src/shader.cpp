@@ -2,6 +2,7 @@
 #include "ioutils.hpp"
 #include <glad/glad.h>
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 #include <array>
 
@@ -32,7 +33,9 @@ namespace {
             if (!compiled) {
                 GLchar message[ERROR_MESSAGE_LENGTH];
                 glGetShaderInfoLog(shader, ERROR_MESSAGE_LENGTH, nullptr, message);
-                std::cerr << "create_shader : OpenGL error: \n" << message << std::endl;
+
+                std::ofstream err("err.txt");
+                err << "create_shader : OpenGL error: \n" << message << std::endl;
             }
         }
         return shader;
@@ -53,7 +56,9 @@ namespace {
             if (!linked) {
                 GLchar message[ERROR_MESSAGE_LENGTH];
                 glGetProgramInfoLog(program, ERROR_MESSAGE_LENGTH, nullptr, message);
-                std::cerr << "create_program : OpenGL error: \n" << message << std::endl;
+
+                std::ofstream err("err.txt");
+                err << "create_program : OpenGL error: \n" << message << std::endl;
             }
 
             for (auto it = begin; it != end; ++it) {

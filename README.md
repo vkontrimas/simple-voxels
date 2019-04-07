@@ -29,3 +29,6 @@ cmake --build .
 
 - `SIVOX_BUILD_TESTS=ON` enables the engine unit tests.
 - `GLM_TEST_ENABLE=OFF` disables unit tests from the glm library.
+
+## Running 
+Make sure you run the `game` executable with `data` as the working directory.

@@ -20,9 +20,12 @@ add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 
 ################################################################################
-# Source code                                                                  #
+# Source code and data                                                         #
 ################################################################################
 add_subdirectory(src)
+add_subdirectory(data)
+
+add_dependencies(game data)
 
 ################################################################################
 # Unit testing                                                                 #

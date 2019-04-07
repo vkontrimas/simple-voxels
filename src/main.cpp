@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include "gamestate.hpp"
 #include "input.hpp" 
+#include "shader.hpp" 
 
 using namespace sivox;
 
@@ -65,78 +66,90 @@ int main(int argc, char *argv[]) {
     }
 
     /*
-     * Input handler
+     * This block is here because we want to dispose of the shaders, input handler and other things before we delete the
+     * OpenGL context and window or quit SDL.
      */
-    enum class Button {
-        Close
-    };
-    InputHandler input;
-    input.map_button(Button::Close, ScanCode::Escape);
+    {
+        /*
+         * Shaders
+         */
+        Shader shader_none;
+        Shader shader_test = Shader::load("test");
 
-    /*
-     * Game loop.
-     *
-     * | start()
-     *   while running:
-     *   | Poll events
-     *   | Update
-     *   | Draw
-     *   | Swap buffers
-     * |
-     */
-    constexpr int UPDATES_PER_SECOND = 60;
-    constexpr double UPDATE_TIME = 1.0 / UPDATES_PER_SECOND;
+        /*
+         * Input handler
+         */
+        enum class Button {
+            Close
+        };
+        InputHandler input;
+        input.map_button(Button::Close, ScanCode::Escape);
 
-    using clock = std::chrono::high_resolution_clock;
-    auto previous_iteration_time = clock::now();
+        /*
+         * Game loop.
+         *
+         * | start()
+         *   while running:
+         *   | Poll events
+         *   | Update
+         *   | Draw
+         *   | Swap buffers
+         * |
+         */
+        constexpr int UPDATES_PER_SECOND = 60;
+        constexpr double UPDATE_TIME = 1.0 / UPDATES_PER_SECOND;
 
-    double update_lag = UPDATE_TIME;
+        using clock = std::chrono::high_resolution_clock;
+        auto previous_iteration_time = clock::now();
 
-    start();
-    bool running = true;
-    while (running) {
-        SDL_Event event = {};
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
+        double update_lag = UPDATE_TIME;
+
+        start();
+        bool running = true;
+        while (running) {
+            SDL_Event event = {};
+            while (SDL_PollEvent(&event)) {
+                switch (event.type) {
+                    case SDL_QUIT:
+                        running = false;
+                        break;
+                    case SDL_WINDOWEVENT:
+                        if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                            running = false;
+                        }
+                        break;
+                    case SDL_KEYUP:
+                    case SDL_KEYDOWN: 
+                        input.keyboard_event(
+                                static_cast<KeyCode>(event.key.keysym.sym),
+                                static_cast<ScanCode>(event.key.keysym.scancode),
+                                event.type == SDL_KEYUP ? Input::Up : Input::Down
+                                );
+                        break;
+                    default:
+                        break;
+                }
+            }
+            input.update();
+
+            if (input.button_pressed(Button::Close)) {
                 running = false;
                 break;
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-                    running = false;
-                }
-                break;
-            case SDL_KEYUP:
-            case SDL_KEYDOWN: 
-                input.keyboard_event(
-                    static_cast<KeyCode>(event.key.keysym.sym),
-                    static_cast<ScanCode>(event.key.keysym.scancode),
-                    event.type == SDL_KEYUP ? Input::Up : Input::Down
-                );
-                break;
-            default:
-                break;
             }
+
+            auto now = clock::now();
+            double delta = std::chrono::duration<double>(now - previous_iteration_time).count();
+            previous_iteration_time = now;
+
+            update_lag += delta;
+            while (update_lag >= UPDATE_TIME) {
+                update();
+                update_lag -= UPDATE_TIME;
+            }
+
+            draw();
+            SDL_GL_SwapWindow(window);
         }
-        input.update();
-
-        if (input.button_pressed(Button::Close)) {
-            running = false;
-            break;
-        }
-
-        auto now = clock::now();
-        double delta = std::chrono::duration<double>(now - previous_iteration_time).count();
-        previous_iteration_time = now;
-
-        update_lag += delta;
-        while (update_lag >= UPDATE_TIME) {
-            update();
-            update_lag -= UPDATE_TIME;
-        }
-
-        draw();
-        SDL_GL_SwapWindow(window);
     }
 
     /*
