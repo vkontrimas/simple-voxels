@@ -13,7 +13,7 @@ namespace sivox {
             auto length = file.tellg();
             file.seekg(0, file.beg);
 
-            std::string text(length, '\0');
+            std::string text(length, ' ');
             file.read(&text[0], length);
 
             return text;
