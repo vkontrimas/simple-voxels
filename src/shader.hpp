@@ -22,6 +22,7 @@ namespace sivox {
         Shader &operator=(Shader &&other) {
             m_program = other.m_program;
             other.m_program = 0;
+			return *this;
         }
 
         GLuint program() const { return m_program; }
