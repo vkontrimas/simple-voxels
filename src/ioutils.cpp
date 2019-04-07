@@ -5,7 +5,7 @@
 namespace fs = std::filesystem;
 
 namespace sivox {
-    std::string read_text_file(std::string const& path) {
+    std::string read_text_file(fs::path const& path) {
         if (fs::exists(path) && fs::is_regular_file(path)) {
             std::ifstream file(path);
 
@@ -23,7 +23,7 @@ namespace sivox {
         }
     }
 
-    void write_text_file(std::string const& path, std::string const& contents) {
+    void write_text_file(fs::path const& path, std::string const& contents) {
         std::ofstream file(path);
         file << contents;
     }
