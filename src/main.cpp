@@ -12,9 +12,48 @@
 #include "input.hpp" 
 #include "shader.hpp" 
 
+/*
+ * For rand, srand and time
+ */
+#include <cstdlib>
+#include <ctime>
+
+/*
+ * For std::function
+ */
+#include <functional>
+
 using namespace sivox;
 
+namespace {
+    void foreach_block(Chunk &chunk, std::function<Block(Position pos, Block block)> f) {
+        for (int z = 0; z < Chunk::width; ++z) {
+            for (int x = 0; x < Chunk::width; ++x) {
+                for (int y = 0; y < Chunk::height; ++y) {
+                    chunk.set_block({x, y, z}, f({x, y, z}, chunk.block({x, y, z})));
+                }
+            }
+        }
+    }
+
+    void sine_mess(Chunk &chunk) {
+        float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        float rand2 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        float rand3 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        float rand4 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        foreach_block(chunk, [rand,rand2,rand3,rand4](Position p, Block b) { 
+            float zf = static_cast<float>(p.z);
+            float xf = static_cast<float>(p.x);
+            float sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
+            float sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
+            float maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
+            return p.y <= maxY ? 1 : 0;
+        });
+    }
+}
+
 int main(int argc, char *argv[]) {
+    std::srand(std::time(nullptr)); // TODO: REMOVE!!!!!!!
     /*
      * - initialize SDL
      * - create a window
@@ -28,7 +67,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_Window *window = SDL_CreateWindow(
-        "Simple Voxels",
+        "Simple Voxels (Esc - close, WASD - rotate camera, I - invert vertical, Chunk[1 - random, 2 - less random, 3 - full, 4 - sine mess, 5 - clear])",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1280,
@@ -54,6 +93,9 @@ int main(int argc, char *argv[]) {
     }
 
     glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    SDL_GL_SwapWindow(window);
+
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);
@@ -83,7 +125,11 @@ int main(int argc, char *argv[]) {
             CameraZoomIn,
             CameraZoomOut,
             CameraInvert,
-            ChunkRegen
+            ChunkRegen,
+            ChunkRegenRandomer,
+            ChunkRegenFull,
+            ChunkClear,
+            ChunkRegenSine,
         };
         InputHandler input;
         input.map_button(Button::Close, ScanCode::Escape);
@@ -94,20 +140,17 @@ int main(int argc, char *argv[]) {
         input.map_button(Button::CameraZoomIn, ScanCode::R);
         input.map_button(Button::CameraZoomOut, ScanCode::F);
         input.map_button(Button::CameraInvert, ScanCode::I);
-        input.map_button(Button::ChunkRegen, ScanCode::Space);
+        input.map_button(Button::ChunkRegen, ScanCode::Key1);
+        input.map_button(Button::ChunkRegenRandomer, ScanCode::Key2);
+        input.map_button(Button::ChunkRegenFull, ScanCode::Key3);
+        input.map_button(Button::ChunkRegenSine, ScanCode::Key4);
+        input.map_button(Button::ChunkClear, ScanCode::Key5);
 
         /*
          * Terrain test
          */
         Chunk chunk;
-        for (int z = 0; z < Chunk::width; ++z) {
-            for (int x = 0; x < Chunk::width; ++x) {
-                for (int y = 0; y < Chunk::height; ++y) {
-                    chunk.set_block({x, y, z}, 1);
-                }
-            }
-        }
-
+        sine_mess(chunk);
         ChunkBuffers buffers(generate_mesh(chunk));
 
         const float camera_pitch_rate = 45.0f;
@@ -222,6 +265,42 @@ int main(int argc, char *argv[]) {
                 return fov_delta * camera_zoom_rate * static_cast<float>(delta);
             }();
             camera_fov = glm::clamp(camera_fov, 0.5f, 70.0f);
+
+            if (input.button_down(Button::ChunkRegen)) {
+                foreach_block(chunk, [](Position p, Block b) { 
+                    return std::rand() % 10000 > 8000 ? 1 : 0;
+                });
+                buffers.set_mesh(generate_mesh(chunk));
+            }
+            if (input.button_down(Button::ChunkRegenRandomer)) {
+                foreach_block(chunk, [](Position p, Block b) { 
+                    return std::rand() % 10000 > 3000 ? 1 : 0;
+                });
+                buffers.set_mesh(generate_mesh(chunk));
+            }
+            if (input.button_down(Button::ChunkRegenSine)) {
+                float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                float rand2 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                float rand3 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                float rand4 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                foreach_block(chunk, [rand,rand2,rand3,rand4](Position p, Block b) { 
+                    float zf = static_cast<float>(p.z);
+                    float xf = static_cast<float>(p.x);
+                    float sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
+                    float sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
+                    float maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
+                    return p.y <= maxY ? 1 : 0;
+                });
+                buffers.set_mesh(generate_mesh(chunk));
+            }
+            if (input.button_down(Button::ChunkRegenFull)) {
+                foreach_block(chunk, [](Position p, Block b) { return 1; });
+                buffers.set_mesh(generate_mesh(chunk));
+            }
+            if (input.button_down(Button::ChunkClear)) {
+                foreach_block(chunk, [](Position p, Block b) { return 0; });
+                buffers.set_mesh(generate_mesh(chunk));
+            }
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
