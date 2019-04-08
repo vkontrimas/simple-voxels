@@ -5,26 +5,12 @@
 #include <SDL_timer.h>
 #include <SDL_events.h>
 #include <glad/glad.h>
+#include "chunkbuffers.hpp"
 #include "gamestate.hpp"
 #include "input.hpp" 
 #include "shader.hpp" 
 
 using namespace sivox;
-
-namespace {
-    void start() {
-        glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
-    }
-
-    void update() {
-        std::cout << "Update!\n";
-    }
-
-    void draw() {
-        glClear(GL_COLOR_BUFFER_BIT);
-        std::cout << "Frame!\n";
-    }
-}
 
 int main(int argc, char *argv[]) {
     /*
@@ -65,6 +51,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
+
     /*
      * This block is here because we want to dispose of the shaders, input handler and other things before we delete the
      * OpenGL context and window or quit SDL.
@@ -86,6 +74,21 @@ int main(int argc, char *argv[]) {
         input.map_button(Button::Close, ScanCode::Escape);
 
         /*
+         * Terrain test
+         */
+        Chunk chunk;
+        for (int z = 0; z < Chunk::width; ++z) {
+            for (int x = 0; x < Chunk::width; ++x) {
+                for (int y = 0; y < Chunk::height; ++y) {
+                    chunk.set_block({x, y, z}, 1);
+                }
+            }
+        }
+
+        ChunkMesh mesh = generate_mesh(chunk);
+        ChunkBuffers buffers(mesh);
+
+        /*
          * Game loop.
          *
          * | start()
@@ -104,7 +107,6 @@ int main(int argc, char *argv[]) {
 
         double update_lag = UPDATE_TIME;
 
-        start();
         bool running = true;
         while (running) {
             SDL_Event event = {};
@@ -143,11 +145,20 @@ int main(int argc, char *argv[]) {
 
             update_lag += delta;
             while (update_lag >= UPDATE_TIME) {
-                update();
+                // update();
                 update_lag -= UPDATE_TIME;
             }
 
-            draw();
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            glUseProgram(shader_test);
+            glBindVertexArray(buffers.vertex_array());
+
+            glDrawElements(GL_TRIANGLES, buffers.element_count(), GL_UNSIGNED_INT, 0);
+
+            glBindVertexArray(0);
+            glUseProgram(shader_none);
+
             SDL_GL_SwapWindow(window);
         }
     }

@@ -11,6 +11,8 @@ set(
     ioutils.cpp
     shader.hpp
     shader.cpp
+    chunkbuffers.hpp
+    chunkbuffers.cpp
 )
 
 set(GAME_LIBRARIES SDL2 glm glad)

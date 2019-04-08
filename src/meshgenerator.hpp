@@ -12,7 +12,7 @@ namespace sivox {
      * Contains a vector of vertices and a vector of triangle indices.
      */
     struct ChunkMesh {
-        using TriangleIndex = int;
+        using TriangleIndex = unsigned int;
         struct Vertex {
             glm::vec3 position;
         };
