@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_Window *window = SDL_CreateWindow(
-        "Simple Voxels (Esc - close, WASD - rotate camera, I - invert vertical, Chunk[1 - random, 2 - less random, 3 - full, 4 - sine mess, 5 - clear])",
+        "Simple Voxels (Esc - close, WASD - rotate camera, RF - zoom, I - invert vertical, Chunk[1 - random, 2 - less random, 3 - full, 4 - sine mess, 5 - clear])",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         1280,
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
         float camera_pitch = -45.0f;
         float camera_yaw = 45.0f;
         const float camera_distance = 160.0f;
-        float camera_fov = 20.0f; 
+        float camera_fov = 30.0f; 
 
         /*
          * Game loop.
@@ -306,21 +306,22 @@ int main(int argc, char *argv[]) {
 
             glUseProgram(shader_test);
 
-            glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -camera_distance)) *
-                             glm::rotate(glm::mat4(1.0f), glm::radians(camera_pitch), glm::vec3(-1.0f, 0.0f, 0.0f)) *
-                             glm::rotate(glm::mat4(1.0f), glm::radians(camera_yaw), glm::vec3(0.0f, -1.0f, 0.0f)) *
-                             glm::translate(glm::mat4(1.0f), -glm::vec3(8.0f, 8.0f, 8.0f));
-            //glm::mat4 view = glm::lookAt(
-                //glm::vec3(32.0f, 24.0f, 32.0f),
-                //glm::vec3(8.0f, 8.0f, -8.0f),
-                //glm::vec3(0.0f, 1.0f, 0.0f)
-            //);
+            glm::mat4 model(1.0f);
+            //glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -camera_distance)) *
+                             //glm::rotate(glm::mat4(1.0f), glm::radians(camera_pitch), glm::vec3(-1.0f, 0.0f, 0.0f)) *
+                             //glm::rotate(glm::mat4(1.0f), glm::radians(camera_yaw), glm::vec3(0.0f, -1.0f, 0.0f)) *
+                             //glm::translate(glm::mat4(1.0f), -glm::vec3(8.0f, 8.0f, 8.0f));
+
+            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -camera_distance));
+            view = glm::rotate(view, glm::radians(camera_pitch), glm::vec3(-1.0f, 0.0f, 0.0f));
+            view = glm::rotate(view, glm::radians(camera_yaw), glm::vec3(0.0f, -1.0f, 0.0f));
+            view = glm::translate(view, -glm::vec3(16.5f, 16.5f, 16.5f));
+
             glm::mat4 projection = glm::perspective(
                 glm::radians(camera_fov / 2.0f),
                 1280.0f / 720.0f,
-                0.01f,
-                1000.0f
+                0.1f,
+                400.0f
             );
             glm::mat4 mvp = projection * view * model;
 
