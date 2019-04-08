@@ -36,6 +36,138 @@ TEST_CASE("MeshGenerator : Empty chunk", "[terrain][blocks][chunks][meshes]") {
     REQUIRE(mesh.triangles.size() == 0);
 }
 
+TEST_CASE("MeshGenerator : emit_block top") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_TOP);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Top face
+         */
+        { glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) },
+        { glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) },
+        { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f) },
+        { glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f) },
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
+TEST_CASE("MeshGenerator : emit_block bottom") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_BOTTOM);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Bottom face
+         */
+        { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+        { glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+        { glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+        { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f) },
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
+TEST_CASE("MeshGenerator : emit_block right") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_RIGHT);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Right face
+         */
+        { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+        { glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+        { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+        { glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
+TEST_CASE("MeshGenerator : emit_block left") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_LEFT);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Left face
+         */
+        { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f) },
+        { glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f) },
+        { glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f) },
+        { glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f) },
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
+TEST_CASE("MeshGenerator : emit_block front") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_FRONT);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Front face
+         */
+        { glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
+        { glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
+        { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
+        { glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) }, 
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
+TEST_CASE("MeshGenerator : emit_block back") {
+    using Catch::Equals;
+
+    ChunkMesh mesh = {};
+    emit_block(mesh, {0, 0, 0}, BLOCK_SIDES_BACK);
+
+    std::vector<ChunkMesh::Vertex> expected_vertices {
+        /*
+         * Back face
+         */
+        { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) },
+        { glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) },
+        { glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) },
+        { glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) }
+    };
+
+    REQUIRE_THAT(
+        mesh.vertices,
+        Equals(expected_vertices)
+    );
+}
+
 TEST_CASE("MeshGenerator : emit_block @ every position", "[terrain][blocks][chunks][meshes]") {
     using Catch::Equals;
 
@@ -45,7 +177,7 @@ TEST_CASE("MeshGenerator : emit_block @ every position", "[terrain][blocks][chun
         for (int x = 0; x < TestChunk::width; ++x) {
             for (int y = 0; y < TestChunk::height; ++y) {
                 ChunkMesh mesh = {};
-                emit_block(mesh, {x, y, z});
+                emit_block(mesh, {x, y, z}, BLOCK_SIDES_ALL);
 
                 REQUIRE(mesh.vertices.size() == 24);
                 std::vector<ChunkMesh::Vertex> expected_vertices {
@@ -87,8 +219,7 @@ TEST_CASE("MeshGenerator : emit_block @ every position", "[terrain][blocks][chun
                     { glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
                     { glm::vec3(0.0f, 1.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
                     { glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
-                    { glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) },
-
+                    { glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f) }, 
                     /*
                      * Back face
                      */

@@ -23,9 +23,26 @@ namespace sivox {
     };
 
     /*
-     * Adds block vertices to the [mesh] at the given [position].
+     * Classic enum because enum class doesn't support bitwise ops. EWWW
      */
-    void emit_block(ChunkMesh &mesh, Position position);
+    enum BlockSides {
+        BLOCK_SIDES_NONE   = 0x000,
+
+        BLOCK_SIDES_TOP    = 0x001,
+        BLOCK_SIDES_BOTTOM = 0x002,
+        BLOCK_SIDES_LEFT   = 0x004,
+        BLOCK_SIDES_RIGHT  = 0x008,
+        BLOCK_SIDES_FRONT  = 0x010,
+        BLOCK_SIDES_BACK   = 0x020,
+
+        BLOCK_SIDES_ALL    = 0x03F
+    };
+
+    /*
+     * Adds block vertices to the [mesh] at the given [position].
+     * The bitmask [sides] indicates which sides of the block should be added.
+     */
+    void emit_block(ChunkMesh &mesh, Position position, BlockSides sides);
 
     /*
      * Generates a mesh for a single [chunk].
@@ -35,7 +52,7 @@ namespace sivox {
         ChunkMesh mesh = {};
         for (auto block : chunk) {
             if (block.block != 0) {
-                emit_block(mesh, block.position);
+                emit_block(mesh, block.position, BLOCK_SIDES_ALL);
             }
         }
         return mesh;
