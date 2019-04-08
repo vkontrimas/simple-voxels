@@ -118,12 +118,6 @@ int main(int argc, char *argv[]) {
          */
         enum class Button {
             Close,
-            CameraPitchUp,
-            CameraPitchDown,
-            CameraYawLeft,
-            CameraYawRight,
-            CameraZoomIn,
-            CameraZoomOut,
             CameraInvert,
             ChunkRegen,
             ChunkRegenRandomer,
@@ -131,20 +125,26 @@ int main(int argc, char *argv[]) {
             ChunkClear,
             ChunkRegenSine,
         };
+
+        enum class Axis {
+            CameraPitch,
+            CameraYaw,
+            CameraZoom,
+        };
+
         InputHandler input;
+
         input.map_button(Button::Close, ScanCode::Escape);
-        input.map_button(Button::CameraPitchUp, ScanCode::W);
-        input.map_button(Button::CameraPitchDown, ScanCode::S);
-        input.map_button(Button::CameraYawLeft, ScanCode::A);
-        input.map_button(Button::CameraYawRight, ScanCode::D);
-        input.map_button(Button::CameraZoomIn, ScanCode::R);
-        input.map_button(Button::CameraZoomOut, ScanCode::F);
         input.map_button(Button::CameraInvert, ScanCode::I);
         input.map_button(Button::ChunkRegen, ScanCode::Key1);
         input.map_button(Button::ChunkRegenRandomer, ScanCode::Key2);
         input.map_button(Button::ChunkRegenFull, ScanCode::Key3);
         input.map_button(Button::ChunkRegenSine, ScanCode::Key4);
         input.map_button(Button::ChunkClear, ScanCode::Key5);
+
+        input.map_axis(Axis::CameraPitch, ScanCode::S, ScanCode::W);
+        input.map_axis(Axis::CameraYaw, ScanCode::A, ScanCode::D);
+        input.map_axis(Axis::CameraZoom, ScanCode::R, ScanCode::F);
 
         /*
          * Terrain test
@@ -229,41 +229,12 @@ int main(int argc, char *argv[]) {
                 camera_inverted = !camera_inverted;
             }
 
-            camera_pitch += [&]() {
-                float pitch_delta = 0.0f;
-                if (input.button_down(Button::CameraPitchUp)) {
-                    pitch_delta += 1.0f;
-                }
-                if (input.button_down(Button::CameraPitchDown)) {
-                    pitch_delta -= 1.0f;
-                }
-                pitch_delta *= camera_pitch_rate * static_cast<float>(delta);
-                pitch_delta *= camera_inverted ? 1.0f : -1.0f;
-                return pitch_delta;
-            }();
+            camera_pitch += input.axis(Axis::CameraPitch) * camera_pitch_rate * static_cast<float>(delta) * (camera_inverted ? 1.0f : -1.0f);
             camera_pitch = glm::clamp(camera_pitch, -90.0f, 90.0f);
 
-            camera_yaw += [&]() {
-                float yaw_delta = 0.0f;
-                if (input.button_down(Button::CameraYawLeft)) {
-                    yaw_delta -= 1.0f;
-                }
-                if (input.button_down(Button::CameraYawRight)) {
-                    yaw_delta += 1.0f;
-                }
-                return yaw_delta * camera_yaw_rate * static_cast<float>(delta);
-            }();
+            camera_yaw += input.axis(Axis::CameraYaw) * camera_yaw_rate * static_cast<float>(delta);
 
-            camera_fov += [&]() {
-                float fov_delta = 0.0f;
-                if (input.button_down(Button::CameraZoomIn)) {
-                    fov_delta -= 1.0f;
-                }
-                if (input.button_down(Button::CameraZoomOut)) {
-                    fov_delta += 1.0f;
-                }
-                return fov_delta * camera_zoom_rate * static_cast<float>(delta);
-            }();
+            camera_fov += input.axis(Axis::CameraZoom) * camera_zoom_rate * static_cast<float>(delta);
             camera_fov = glm::clamp(camera_fov, 0.5f, 70.0f);
 
             if (input.button_pressed(Button::ChunkRegen)) {
