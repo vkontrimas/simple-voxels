@@ -620,7 +620,7 @@ namespace sivox {
             DualButtonInput
         };
 
-        explicit AxisInput(ButtonInput max, ButtonInput min) : m_type(DualButtonInput), m_buttons({ max, min }) {}
+        explicit AxisInput(ButtonInput min, ButtonInput max) : m_type(DualButtonInput), m_buttons({ min, max }) {}
 
         Type type() const { return m_type; }
 
@@ -658,8 +658,8 @@ namespace sivox {
         Type m_type;
         union {
             struct {
-                ButtonInput max;
                 ButtonInput min;
+                ButtonInput max;
             } m_buttons;
         };
     };
@@ -711,7 +711,7 @@ namespace sivox {
             }
         }
 
-        template<class T> inline void map_axis(T axis, ButtonInput max, ButtonInput min) {
+        template<class T> inline void map_axis(T axis, ButtonInput min, ButtonInput max) {
             map_axis(axis, AxisInput(min, max));
         }
 
