@@ -9,6 +9,12 @@
 #include <cstdlib>
 #include <algorithm>
 
+/*
+ * INPUT TODO:
+ *    - Controller and joystick input: buttons and axes
+ *    - Add a way to invert AxisInput
+ *    - Make it convenient to get a vector of every registered input so we can grab it for the settings menu.
+ */
 namespace sivox {
     /*
      * A keycode enum.
