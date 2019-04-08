@@ -54,6 +54,11 @@ int main(int argc, char *argv[]) {
     }
 
     glClearColor(0.0f, 0.5f, 0.75f, 0.0f);
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     /*
      * This block is here because we want to dispose of the shaders, input handler and other things before we delete the
@@ -87,8 +92,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        ChunkMesh mesh = generate_mesh(chunk);
-        ChunkBuffers buffers(mesh);
+        ChunkBuffers buffers(generate_mesh(chunk));
 
         /*
          * Game loop.
@@ -151,13 +155,13 @@ int main(int argc, char *argv[]) {
                 update_lag -= UPDATE_TIME;
             }
 
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glUseProgram(shader_test);
 
             glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
             glm::mat4 view = glm::lookAt(
-                glm::vec3(8.0f, 8.0f, 64.0f),
+                glm::vec3(32.0f, 24.0f, 32.0f),
                 glm::vec3(8.0f, 8.0f, -8.0f),
                 glm::vec3(0.0f, 1.0f, 0.0f)
             );
@@ -169,7 +173,9 @@ int main(int argc, char *argv[]) {
             );
             glm::mat4 mvp = projection * view * model;
 
-            glUniformMatrix4fv(glGetUniformLocation(shader_test, "matrix_mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
+            glUniformMatrix4fv(glGetUniformLocation(shader_test, "u_matrix_mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
+            glUniform3fv(glGetUniformLocation(shader_test, "u_light_dir"), 1, glm::value_ptr(glm::normalize(glm::vec3(-3.0f, -7.0f, -5.0f))));
+            glUniform1f(glGetUniformLocation(shader_test, "u_light_intensity"), 1.0f);
 
             glBindVertexArray(buffers.vertex_array());
             glDrawElements(GL_TRIANGLES, buffers.element_count(), GL_UNSIGNED_INT, 0);

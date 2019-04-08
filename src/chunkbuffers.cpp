@@ -8,6 +8,7 @@ namespace {
     void set_up_buffers(sivox::ChunkBuffers const& buffers) {
         const GLenum buffer_usage = GL_STATIC_DRAW; // TODO: See how using GL_DYNAMIC_DRAW affects performance!
         const GLuint vertex_position_loc = 0; // TODO: Look this up in the shader in the future?
+        const GLuint vertex_normal_loc = 1; // TODO: Look this up in the shader in the future?
 
         glBindVertexArray(buffers.vertex_array());
 
@@ -29,7 +30,10 @@ namespace {
         );
 
         glEnableVertexAttribArray(vertex_position_loc);
-        glVertexAttribPointer(vertex_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, 0);
+        glEnableVertexAttribArray(vertex_normal_loc);
+
+        glVertexAttribPointer(vertex_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, 0);
+        glVertexAttribPointer(vertex_normal_loc, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (GLvoid*)(sizeof(GLfloat) * 3));
 
         glBindVertexArray(0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
