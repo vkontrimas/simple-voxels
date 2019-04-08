@@ -159,10 +159,10 @@ int main(int argc, char *argv[]) {
 
         bool camera_inverted = false;
 
-        float camera_pitch = -45.0f;
+        float camera_pitch = -30.0f;
         float camera_yaw = 45.0f;
         const float camera_distance = 160.0f;
-        float camera_fov = 30.0f; 
+        float camera_fov = 40.0f; 
 
         /*
          * Game loop.
