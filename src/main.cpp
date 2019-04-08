@@ -317,9 +317,10 @@ int main(int argc, char *argv[]) {
             view = glm::rotate(view, glm::radians(camera_yaw), glm::vec3(0.0f, -1.0f, 0.0f));
             view = glm::translate(view, -glm::vec3(16.5f, 16.5f, 16.5f));
 
-            glm::mat4 projection = glm::perspective(
+            glm::mat4 projection = glm::perspectiveFov(
                 glm::radians(camera_fov / 2.0f),
-                1280.0f / 720.0f,
+                1280.0f,
+                720.0f,
                 0.1f,
                 400.0f
             );
