@@ -14,6 +14,6 @@ foreach(file ${DATA_FILES})
         OUTPUT ${file}
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${file} ${CMAKE_CURRENT_BINARY_DIR}/${file}
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${file}
-        COMMENT Copying ${file}
+        COMMENT "Copying ${file}..."
     )
 endforeach()
