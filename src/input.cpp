@@ -7,8 +7,8 @@ namespace sivox {
         std::fill(m_scancodes.begin(), m_scancodes.end(), false);
     }
 
-    void InputHandler::keyboard_event(KeyCode keycode, ScanCode scancode, Input::KeyboardEvent e) {
-        bool down = e == Input::Down;
+    void InputHandler::keyboard_event(KeyCode keycode, ScanCode scancode, ButtonInput::KeyboardEvent e) {
+        bool down = e == ButtonInput::Down;
         m_scancodes[static_cast<int>(scancode)] = down;
         if (down) {
             m_keycodes.push_back(keycode);
@@ -22,13 +22,13 @@ namespace sivox {
         for (ButtonMapping &button : m_buttons) {
             button.down_previously = button.down;
             bool down = false;
-            for (Input const& input : button.inputs) {
-                if (input.type() == Input::KeyboardScanCode) {
+            for (ButtonInput const& input : button.inputs) {
+                if (input.type() == ButtonInput::KeyboardScanCode) {
                     if (m_scancodes[static_cast<int>(input.scancode())]) {
                         down = true;
                     }
                 }
-                else if (input.type() == Input::KeyboardKeyCode) {
+                else if (input.type() == ButtonInput::KeyboardKeyCode) {
                     /*
                      * O(mn) where m = number of KeyCode inputs
                      *             n = number of KeyCodes being held

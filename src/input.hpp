@@ -555,7 +555,7 @@ namespace sivox {
      *
      * KeyCode and ScanCode values are implicitly converted to an Input.
      */
-    class Input {
+    class ButtonInput {
     public:
         enum KeyboardEvent {
             Up,
@@ -567,8 +567,8 @@ namespace sivox {
             KeyboardKeyCode
         };
 
-        Input(KeyCode keycode) : m_type(KeyboardKeyCode), m_keycode(keycode) {}
-        Input(ScanCode scancode) : m_type(KeyboardScanCode), m_scancode(scancode) {}
+        ButtonInput(KeyCode keycode) : m_type(KeyboardKeyCode), m_keycode(keycode) {}
+        ButtonInput(ScanCode scancode) : m_type(KeyboardScanCode), m_scancode(scancode) {}
 
         Type type() const { return m_type; }
 
@@ -590,12 +590,12 @@ namespace sivox {
         };
     };
 
-    static inline bool operator==(Input a, Input b) {
+    static inline bool operator==(ButtonInput a, ButtonInput b) {
         if (a.type() == b.type()) {
             switch (a.type()) {
-            case Input::KeyboardKeyCode:
+            case ButtonInput::KeyboardKeyCode:
                 return a.keycode() == b.keycode();
-            case Input::KeyboardScanCode:
+            case ButtonInput::KeyboardScanCode:
                 return a.scancode() == b.scancode();
             default:
                 return false;
@@ -606,7 +606,7 @@ namespace sivox {
         }
     }
 
-    static inline bool operator!=(Input a, Input b) {
+    static inline bool operator!=(ButtonInput a, ButtonInput b) {
         return !(a == b);
     }
 
@@ -619,10 +619,10 @@ namespace sivox {
     public:
         InputHandler();
 
-        void keyboard_event(KeyCode keycode, ScanCode scancode, Input::KeyboardEvent e);
+        void keyboard_event(KeyCode keycode, ScanCode scancode, ButtonInput::KeyboardEvent e);
         void update();
 
-        template<class T> inline void map_button(T button, Input input) {
+        template<class T> inline void map_button(T button, ButtonInput input) {
             int index = static_cast<int>(button);
             if (index >= 0) {
                 if (index >= m_buttons.size()) {
@@ -661,7 +661,7 @@ namespace sivox {
             return index >= 0 && index < m_buttons.size() && !m_buttons[index].down && m_buttons[index].down_previously;
         }
         
-        template<class T> inline std::vector<Input> const& button_inputs(T button) const { 
+        template<class T> inline std::vector<ButtonInput> const& button_inputs(T button) const { 
             int index = static_cast<int>(button);
             if (index >= 0 && index < m_buttons.size()) { return m_buttons[index].inputs; }
             else { return m_empty_input_vec; }
@@ -669,12 +669,12 @@ namespace sivox {
 
     private:
         struct ButtonMapping {
-            std::vector<Input> inputs;
+            std::vector<ButtonInput> inputs;
             bool down = false;
             bool down_previously = false;
         };
         std::vector<ButtonMapping> m_buttons;
-        const std::vector<Input> m_empty_input_vec;
+        const std::vector<ButtonInput> m_empty_input_vec;
 
         std::array<bool, static_cast<int>(ScanCode::Count)> m_scancodes;
         std::vector<KeyCode> m_keycodes;

@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
                         input.keyboard_event(
                                 static_cast<KeyCode>(event.key.keysym.sym),
                                 static_cast<ScanCode>(event.key.keysym.scancode),
-                                event.type == SDL_KEYUP ? Input::Up : Input::Down
+                                event.type == SDL_KEYUP ? ButtonInput::Up : ButtonInput::Down
                                 );
                         break;
                     default:
@@ -266,19 +266,19 @@ int main(int argc, char *argv[]) {
             }();
             camera_fov = glm::clamp(camera_fov, 0.5f, 70.0f);
 
-            if (input.button_down(Button::ChunkRegen)) {
+            if (input.button_pressed(Button::ChunkRegen)) {
                 foreach_block(chunk, [](Position p, Block b) { 
                     return std::rand() % 10000 > 8000 ? 1 : 0;
                 });
                 buffers.set_mesh(generate_mesh(chunk));
             }
-            if (input.button_down(Button::ChunkRegenRandomer)) {
+            if (input.button_pressed(Button::ChunkRegenRandomer)) {
                 foreach_block(chunk, [](Position p, Block b) { 
                     return std::rand() % 10000 > 3000 ? 1 : 0;
                 });
                 buffers.set_mesh(generate_mesh(chunk));
             }
-            if (input.button_down(Button::ChunkRegenSine)) {
+            if (input.button_pressed(Button::ChunkRegenSine)) {
                 float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                 float rand2 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
                 float rand3 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
@@ -293,11 +293,11 @@ int main(int argc, char *argv[]) {
                 });
                 buffers.set_mesh(generate_mesh(chunk));
             }
-            if (input.button_down(Button::ChunkRegenFull)) {
+            if (input.button_pressed(Button::ChunkRegenFull)) {
                 foreach_block(chunk, [](Position p, Block b) { return 1; });
                 buffers.set_mesh(generate_mesh(chunk));
             }
-            if (input.button_down(Button::ChunkClear)) {
+            if (input.button_pressed(Button::ChunkClear)) {
                 foreach_block(chunk, [](Position p, Block b) { return 0; });
                 buffers.set_mesh(generate_mesh(chunk));
             }
