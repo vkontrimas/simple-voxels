@@ -327,6 +327,7 @@ int main(int argc, char *argv[]) {
             glUniformMatrix4fv(glGetUniformLocation(shader_test, "u_matrix_mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
             glUniform3fv(glGetUniformLocation(shader_test, "u_light_dir"), 1, glm::value_ptr(glm::normalize(glm::vec3(-3.0f, -7.0f, -5.0f))));
             glUniform1f(glGetUniformLocation(shader_test, "u_light_intensity"), 1.0f);
+            glUniform1f(glGetUniformLocation(shader_test, "u_ambient_light"), 0.2f);
 
             glBindVertexArray(buffers.vertex_array());
             glDrawElements(GL_TRIANGLES, buffers.element_count(), GL_UNSIGNED_INT, 0);
