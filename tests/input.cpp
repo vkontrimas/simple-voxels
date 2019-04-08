@@ -264,3 +264,7 @@ TEST_CASE("InputHandler : keyboard input (keycode)", "[input]") {
     REQUIRE_FALSE(input.button_down(Button::B)); REQUIRE(input.button_up(Button::B)); REQUIRE_FALSE(input.button_pressed(Button::B)); REQUIRE_FALSE(input.button_released(Button::B));
     REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
 }
+
+/*
+ * TODO: Axis input tests!
+ */

@@ -6,6 +6,7 @@
 #include <array>
 #include <vector>
 #include <cassert>
+#include <cstdlib>
 #include <algorithm>
 
 namespace sivox {
@@ -610,6 +611,74 @@ namespace sivox {
         return !(a == b);
     }
 
+    /*
+     * Represents an axis input mapped to a pair of buttons or an actual controller axis.
+     */
+    class AxisInput {
+    public:
+        enum Type {
+            DualButtonInput
+        };
+
+        explicit AxisInput(ButtonInput min, ButtonInput max) : m_type(DualButtonInput), m_buttons({ min, max }) {}
+
+        Type type() const { return m_type; }
+
+        ButtonInput min() const {
+            if (type() == DualButtonInput) { return m_buttons.min; }
+            else { 
+                /*
+                 * Redundant assert to give info.
+                 * abort() to ensure we terminate!
+                 *
+                 * There isn't anything to really return here.
+                 * Feels iffy to add an 'ButtonInput::Invalid' type to ButtonInput.
+                 */
+                assert(type() == DualButtonInput);
+                std::abort(); 
+            }
+        }
+
+        ButtonInput max() const {
+            if (type() == DualButtonInput) { return m_buttons.max; }
+            else { 
+                /*
+                 * Redundant assert to give info.
+                 * abort() to ensure we terminate!
+                 *
+                 * There isn't anything to really return here.
+                 * Feels iffy to add an 'ButtonInput::Invalid' type to ButtonInput.
+                 */
+                assert(type() == DualButtonInput);
+                std::abort(); 
+            }
+        }
+
+    private:
+        Type m_type;
+        union {
+            struct {
+                ButtonInput min;
+                ButtonInput max;
+            } m_buttons;
+        };
+    };
+
+    static inline bool operator==(AxisInput a, AxisInput b) {
+        if (a.type() == b.type()) {
+            switch (a.type()) {
+            case AxisInput::DualButtonInput:
+                return a.min() == b.min() && a.max() == b.max();
+            default:
+                return false;
+            }
+        }
+        else { return false; }
+    }
+
+    static inline bool operator!=(AxisInput a, AxisInput b) {
+        return !(a == b);
+    }
 
     /*
      * Processes user input.
@@ -622,8 +691,43 @@ namespace sivox {
         void keyboard_event(KeyCode keycode, ScanCode scancode, ButtonInput::KeyboardEvent e);
         void update();
 
+        template<class T> inline void map_axis(T axis, AxisInput input) {
+            int index = static_cast<int>(axis);
+            assert(index >= 0);
+            if (index >= 0) {
+                if (index >= m_axes.size()) {
+                    m_axes.resize(index + 1);
+                }
+
+                auto existing_axis = std::find(
+                    m_axes[index].inputs.begin(),
+                    m_axes[index].inputs.end(),
+                    input
+                );
+
+                if (existing_axis == m_axis[index].inputs.end()) {
+                    m_axes[index].inputs.push_back(input);
+                }
+            }
+        }
+
+        template<class T> inline void map_axis(T axis, ButtonInput min, ButtonInput max) {
+            map_axis(axis, AxisInput(min, max));
+        }
+
+        template<class T> inline float axis(T axis) {
+            int index = static_cast<int>(axis);
+            if (index >= 0 && index < m_axes.size()) {
+                return m_axes[index].latest_value;
+            }
+            else {
+                return 0.0f;
+            }
+        }
+
         template<class T> inline void map_button(T button, ButtonInput input) {
             int index = static_cast<int>(button);
+            assert(index >= 0);
             if (index >= 0) {
                 if (index >= m_buttons.size()) {
                     m_buttons.resize(index + 1);
@@ -675,6 +779,20 @@ namespace sivox {
         };
         std::vector<ButtonMapping> m_buttons;
         const std::vector<ButtonInput> m_empty_input_vec;
+
+        struct AxisMapping {
+            std::vector<AxisInput> inputs;
+            /*
+             *  Value is -1 to 1
+             *
+             *  Currently overwritten by the latest input. When multiple inputs happen in the same update,
+             *  however unlikely, this is simply the input that happens to be processed last. The order in which
+             *  this happens shouldn't bounce around too much or at all... So while not super convenient, this should be
+             *  alright for now.
+             */
+            float latest_value = 0.0f;
+        };
+        std::vector<AxisMapping> m_axes;
 
         std::array<bool, static_cast<int>(ScanCode::Count)> m_scancodes;
         std::vector<KeyCode> m_keycodes;
