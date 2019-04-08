@@ -5,6 +5,8 @@
 #include <SDL_timer.h>
 #include <SDL_events.h>
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "chunkbuffers.hpp"
 #include "gamestate.hpp"
 #include "input.hpp" 
@@ -152,11 +154,27 @@ int main(int argc, char *argv[]) {
             glClear(GL_COLOR_BUFFER_BIT);
 
             glUseProgram(shader_test);
+
+            glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+            glm::mat4 view = glm::lookAt(
+                glm::vec3(8.0f, 8.0f, 64.0f),
+                glm::vec3(8.0f, 8.0f, -8.0f),
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+            glm::mat4 projection = glm::perspective(
+                glm::radians(50.0f),
+                1280.0f / 720.0f,
+                0.01f,
+                1000.0f
+            );
+            glm::mat4 mvp = projection * view * model;
+
+            glUniformMatrix4fv(glGetUniformLocation(shader_test, "matrix_mvp"), 1, GL_FALSE, glm::value_ptr(mvp));
+
             glBindVertexArray(buffers.vertex_array());
-
             glDrawElements(GL_TRIANGLES, buffers.element_count(), GL_UNSIGNED_INT, 0);
-
             glBindVertexArray(0);
+
             glUseProgram(shader_none);
 
             SDL_GL_SwapWindow(window);
