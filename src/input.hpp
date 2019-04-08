@@ -705,7 +705,7 @@ namespace sivox {
                     input
                 );
 
-                if (existing_axis == m_axis[index].inputs.end()) {
+                if (existing_axis == m_axes[index].inputs.end()) {
                     m_axes[index].inputs.push_back(input);
                 }
             }
