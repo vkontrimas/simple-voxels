@@ -52,7 +52,16 @@ namespace sivox {
         ChunkMesh mesh = {};
         for (auto block : chunk) {
             if (block.block != 0) {
-                emit_block(mesh, block.position, BLOCK_SIDES_ALL);
+                Position p = block.position;
+                int bitmask = BLOCK_SIDES_NONE;
+                if (chunk.block({p.x, p.y + 1, p.z}) == 0) { bitmask |= BLOCK_SIDES_TOP; }
+                if (chunk.block({p.x, p.y - 1, p.z}) == 0) { bitmask |= BLOCK_SIDES_BOTTOM; }
+                if (chunk.block({p.x + 1, p.y, p.z}) == 0) { bitmask |= BLOCK_SIDES_RIGHT; }
+                if (chunk.block({p.x - 1, p.y, p.z}) == 0) { bitmask |= BLOCK_SIDES_LEFT; }
+                if (chunk.block({p.x, p.y, p.z + 1}) == 0) { bitmask |= BLOCK_SIDES_BACK; }
+                if (chunk.block({p.x, p.y, p.z - 1}) == 0) { bitmask |= BLOCK_SIDES_FRONT; }
+
+                emit_block(mesh, block.position, static_cast<BlockSides>(bitmask));
             }
         }
         return mesh;
