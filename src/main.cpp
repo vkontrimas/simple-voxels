@@ -75,10 +75,26 @@ int main(int argc, char *argv[]) {
          * Input handler
          */
         enum class Button {
-            Close
+            Close,
+            CameraPitchUp,
+            CameraPitchDown,
+            CameraYawLeft,
+            CameraYawRight,
+            CameraZoomIn,
+            CameraZoomOut,
+            CameraInvert,
+            ChunkRegen
         };
         InputHandler input;
         input.map_button(Button::Close, ScanCode::Escape);
+        input.map_button(Button::CameraPitchUp, ScanCode::W);
+        input.map_button(Button::CameraPitchDown, ScanCode::S);
+        input.map_button(Button::CameraYawLeft, ScanCode::A);
+        input.map_button(Button::CameraYawRight, ScanCode::D);
+        input.map_button(Button::CameraZoomIn, ScanCode::R);
+        input.map_button(Button::CameraZoomOut, ScanCode::F);
+        input.map_button(Button::CameraInvert, ScanCode::I);
+        input.map_button(Button::ChunkRegen, ScanCode::Space);
 
         /*
          * Terrain test
@@ -93,6 +109,17 @@ int main(int argc, char *argv[]) {
         }
 
         ChunkBuffers buffers(generate_mesh(chunk));
+
+        const float camera_pitch_rate = 45.0f;
+        const float camera_yaw_rate = 45.0f;
+        const float camera_zoom_rate = 20.0f;
+
+        bool camera_inverted = false;
+
+        float camera_pitch = -45.0f;
+        float camera_yaw = 45.0f;
+        const float camera_distance = 160.0f;
+        float camera_fov = 20.0f; 
 
         /*
          * Game loop.
@@ -155,18 +182,63 @@ int main(int argc, char *argv[]) {
                 update_lag -= UPDATE_TIME;
             }
 
+            if (input.button_pressed(Button::CameraInvert)) {
+                camera_inverted = !camera_inverted;
+            }
+
+            camera_pitch += [&]() {
+                float pitch_delta = 0.0f;
+                if (input.button_down(Button::CameraPitchUp)) {
+                    pitch_delta += 1.0f;
+                }
+                if (input.button_down(Button::CameraPitchDown)) {
+                    pitch_delta -= 1.0f;
+                }
+                pitch_delta *= camera_pitch_rate * static_cast<float>(delta);
+                pitch_delta *= camera_inverted ? 1.0f : -1.0f;
+                return pitch_delta;
+            }();
+            camera_pitch = glm::clamp(camera_pitch, -90.0f, 90.0f);
+
+            camera_yaw += [&]() {
+                float yaw_delta = 0.0f;
+                if (input.button_down(Button::CameraYawLeft)) {
+                    yaw_delta -= 1.0f;
+                }
+                if (input.button_down(Button::CameraYawRight)) {
+                    yaw_delta += 1.0f;
+                }
+                return yaw_delta * camera_yaw_rate * static_cast<float>(delta);
+            }();
+
+            camera_fov += [&]() {
+                float fov_delta = 0.0f;
+                if (input.button_down(Button::CameraZoomIn)) {
+                    fov_delta -= 1.0f;
+                }
+                if (input.button_down(Button::CameraZoomOut)) {
+                    fov_delta += 1.0f;
+                }
+                return fov_delta * camera_zoom_rate * static_cast<float>(delta);
+            }();
+            camera_fov = glm::clamp(camera_fov, 0.5f, 70.0f);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glUseProgram(shader_test);
 
             glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-            glm::mat4 view = glm::lookAt(
-                glm::vec3(32.0f, 24.0f, 32.0f),
-                glm::vec3(8.0f, 8.0f, -8.0f),
-                glm::vec3(0.0f, 1.0f, 0.0f)
-            );
+            glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -camera_distance)) *
+                             glm::rotate(glm::mat4(1.0f), glm::radians(camera_pitch), glm::vec3(-1.0f, 0.0f, 0.0f)) *
+                             glm::rotate(glm::mat4(1.0f), glm::radians(camera_yaw), glm::vec3(0.0f, -1.0f, 0.0f)) *
+                             glm::translate(glm::mat4(1.0f), -glm::vec3(8.0f, 8.0f, 8.0f));
+            //glm::mat4 view = glm::lookAt(
+                //glm::vec3(32.0f, 24.0f, 32.0f),
+                //glm::vec3(8.0f, 8.0f, -8.0f),
+                //glm::vec3(0.0f, 1.0f, 0.0f)
+            //);
             glm::mat4 projection = glm::perspective(
-                glm::radians(50.0f),
+                glm::radians(camera_fov / 2.0f),
                 1280.0f / 720.0f,
                 0.01f,
                 1000.0f
