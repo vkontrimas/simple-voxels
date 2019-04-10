@@ -12,6 +12,10 @@ namespace sivox {
      * Contains a vector of vertices and a vector of triangle indices.
      */
     struct ChunkMesh {
+        static constexpr int worst_vertex_count = Chunk::volume * 24; // 4 verts per face * 6 faces = 24 verts
+        static constexpr int worst_triangle_count = Chunk::volume * 12; // 2 triangles per face * 6 faces = 12
+        static constexpr int worst_triangle_index_count = worst_triangle_count * 3; // 3 indices per triangle
+
         using TriangleIndex = unsigned int;
         struct Vertex {
             glm::vec3 position;
