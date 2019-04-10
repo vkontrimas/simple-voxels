@@ -54,6 +54,8 @@ namespace sivox {
     template<int WIDTH, int HEIGHT>
     inline ChunkMesh generate_mesh(ChunkTemplate<WIDTH, HEIGHT> const& chunk) {
         ChunkMesh mesh = {};
+        mesh.vertices.reserve(ChunkMesh::worst_vertex_count);
+        mesh.triangles.reserve(ChunkMesh::worst_triangle_index_count);
         for (auto block : chunk) {
             if (block.block != 0) {
                 Position p = block.position;
