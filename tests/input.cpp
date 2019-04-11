@@ -265,6 +265,314 @@ TEST_CASE("InputHandler : keyboard input (keycode)", "[input]") {
     REQUIRE_FALSE(input.button_down(Button::C)); REQUIRE(input.button_up(Button::C)); REQUIRE_FALSE(input.button_pressed(Button::C)); REQUIRE_FALSE(input.button_released(Button::C));
 }
 
-/*
- * TODO: Axis input tests!
- */
+TEST_CASE("InputHandler : axis input (scancode)", "[input]") {
+    enum class Axis {
+        A,
+        B,
+        C
+    };
+
+    InputHandler input;
+    input.map_axis(Axis::A, ScanCode::S, ScanCode::W);
+    input.map_axis(Axis::B, ScanCode::A, ScanCode::D);
+    input.map_axis(Axis::C, ScanCode::R, ScanCode::F);
+
+    /*
+     * Everything should be 0.0 to start with.
+     */
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should be 0.0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Pressing W brings A to 1.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 1.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing W brings A to 0.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing S brings A to -0.0.
+     * Simultaneously pressing D, brings B to 1.0.
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Down);
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == -1.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release S, Axis::A == 0
+     * Keep holding D
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Press A, while D is held...
+     * Axis B should be 0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release D, while A is held...
+     * Axis::B should be -1.0
+     */
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == -1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release A, Axis::B should be 0.0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should still be 0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+}
+
+TEST_CASE("InputHandler : axis input (keycode)", "[input]") {
+    enum class Axis {
+        A,
+        B,
+        C
+    };
+
+    InputHandler input;
+    input.map_axis(Axis::A, KeyCode::S, KeyCode::W);
+    input.map_axis(Axis::B, KeyCode::A, KeyCode::D);
+    input.map_axis(Axis::C, KeyCode::R, KeyCode::F);
+
+    /*
+     * Everything should be 0.0 to start with.
+     */
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should be 0.0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Pressing W brings A to 1.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 1.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing W brings A to 0.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing S brings A to -0.0.
+     * Simultaneously pressing D, brings B to 1.0.
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Down);
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == -1.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release S, Axis::A == 0
+     * Keep holding D
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Press A, while D is held...
+     * Axis B should be 0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release D, while A is held...
+     * Axis::B should be -1.0
+     */
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == -1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release A, Axis::B should be 0.0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should still be 0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+}
+
+TEST_CASE("InputHandler : axis input (scancode, keycode mix)", "[input]") {
+    enum class Axis {
+        A,
+        B,
+        C
+    };
+
+    InputHandler input;
+    input.map_axis(Axis::A, KeyCode::S, ScanCode::W);
+    input.map_axis(Axis::B, ScanCode::A, KeyCode::D);
+    input.map_axis(Axis::C, KeyCode::R, KeyCode::F);
+
+    /*
+     * Everything should be 0.0 to start with.
+     */
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should be 0.0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Pressing W brings A to 1.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 1.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing W brings A to 0.0.
+     */
+    input.keyboard_event(KeyCode::W, ScanCode::W, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Releasing S brings A to -0.0.
+     * Simultaneously pressing D, brings B to 1.0.
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Down);
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == -1.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release S, Axis::A == 0
+     * Keep holding D
+     */
+    input.keyboard_event(KeyCode::S, ScanCode::S, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Press A, while D is held...
+     * Axis B should be 0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Down);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release D, while A is held...
+     * Axis::B should be -1.0
+     */
+    input.keyboard_event(KeyCode::D, ScanCode::D, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == -1.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Release A, Axis::B should be 0.0
+     */
+    input.keyboard_event(KeyCode::A, ScanCode::A, ButtonInput::Up);
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+
+    /*
+     * Everything should still be 0 after an empty update.
+     */
+    input.update();
+    REQUIRE(input.axis(Axis::A) == 0.0f);
+    REQUIRE(input.axis(Axis::B) == 0.0f);
+    REQUIRE(input.axis(Axis::C) == 0.0f);
+}
