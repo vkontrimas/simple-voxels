@@ -14,14 +14,14 @@ namespace {
 
         glBufferData(
             GL_ARRAY_BUFFER, 
-            sivox::ChunkMesh::worst_vertex_count * sizeof(sivox::ChunkMesh::Vertex), 
+            sivox::ChunkMesh::max_vertex_count * sizeof(sivox::ChunkMesh::Vertex), 
             nullptr, 
             buffer_usage
         );
 
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER, 
-            sivox::ChunkMesh::worst_triangle_index_count * sizeof(sivox::ChunkMesh::TriangleIndex), 
+            sivox::ChunkMesh::max_triangle_index_count * sizeof(sivox::ChunkMesh::TriangleIndex), 
             nullptr, 
             buffer_usage
         );
@@ -57,10 +57,10 @@ namespace sivox {
     }
 
     void ChunkBuffers::set_mesh(ChunkMesh const& mesh) {
-        assert(mesh.vertices.size() <= ChunkMesh::worst_vertex_count);
-        assert(mesh.triangles.size() <= ChunkMesh::worst_triangle_index_count);
+        assert(mesh.vertices.size() <= ChunkMesh::max_vertex_count);
+        assert(mesh.triangles.size() <= ChunkMesh::max_triangle_index_count);
 
-        m_element_count = mesh.triangles.size() > ChunkMesh::worst_triangle_index_count ? ChunkMesh::worst_triangle_index_count : mesh.triangles.size();
+        m_element_count = mesh.triangles.size() > ChunkMesh::max_triangle_index_count ? ChunkMesh::max_triangle_index_count : mesh.triangles.size();
 
         /*
          * TODO: We're making a full copy of the mesh data here. Perhaps, ChunkMesh should be generated with the
@@ -69,12 +69,12 @@ namespace sivox {
          */
         ChunkMesh mesh_copy = mesh;
 
-        mesh_copy.vertices.resize(ChunkMesh::worst_vertex_count, { glm::vec3(0.0f, 0.0f, 0.0f) });
-        mesh_copy.triangles.resize(ChunkMesh::worst_triangle_index_count, 0);
+        mesh_copy.vertices.resize(ChunkMesh::max_vertex_count, { glm::vec3(0.0f, 0.0f, 0.0f) });
+        mesh_copy.triangles.resize(ChunkMesh::max_triangle_index_count, 0);
 
         glBindVertexArray(vertex_array());
-        glBufferSubData(GL_ARRAY_BUFFER, 0, ChunkMesh::worst_vertex_count * sizeof(ChunkMesh::Vertex), mesh_copy.vertices.data());
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ChunkMesh::worst_triangle_index_count * sizeof(ChunkMesh::TriangleIndex), mesh_copy.triangles.data());
+        glBufferSubData(GL_ARRAY_BUFFER, 0, ChunkMesh::max_vertex_count * sizeof(ChunkMesh::Vertex), mesh_copy.vertices.data());
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ChunkMesh::max_triangle_index_count * sizeof(ChunkMesh::TriangleIndex), mesh_copy.triangles.data());
         glBindVertexArray(0);
     }
 }

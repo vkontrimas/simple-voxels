@@ -12,9 +12,9 @@ namespace sivox {
      * Contains a vector of vertices and a vector of triangle indices.
      */
     struct ChunkMesh {
-        static constexpr int worst_vertex_count = Chunk::volume * 24; // 4 verts per face * 6 faces = 24 verts
-        static constexpr int worst_triangle_count = Chunk::volume * 12; // 2 triangles per face * 6 faces = 12
-        static constexpr int worst_triangle_index_count = worst_triangle_count * 3; // 3 indices per triangle
+        static constexpr int max_vertex_count = Chunk::volume * 24; // 4 verts per face * 6 faces = 24 verts
+        static constexpr int max_triangle_count = Chunk::volume * 12; // 2 triangles per face * 6 faces = 12
+        static constexpr int max_triangle_index_count = max_triangle_count * 3; // 3 indices per triangle
 
         using TriangleIndex = unsigned int;
         struct Vertex {
@@ -54,8 +54,8 @@ namespace sivox {
     template<int WIDTH, int HEIGHT>
     inline ChunkMesh generate_mesh(ChunkTemplate<WIDTH, HEIGHT> const& chunk) {
         ChunkMesh mesh = {};
-        mesh.vertices.reserve(ChunkMesh::worst_vertex_count);
-        mesh.triangles.reserve(ChunkMesh::worst_triangle_index_count);
+        mesh.vertices.reserve(ChunkMesh::max_vertex_count);
+        mesh.triangles.reserve(ChunkMesh::max_triangle_index_count);
         for (auto block : chunk) {
             if (block.block != 0) {
                 Position p = block.position;
