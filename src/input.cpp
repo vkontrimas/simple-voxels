@@ -54,7 +54,7 @@ namespace sivox {
                     if (min_input.type() == ButtonInput::KeyboardScanCode) {
                         min_down = m_scancodes[static_cast<int>(min_input.scancode())];
                     }
-                    else if (input.type() == ButtonInput::KeyboardKeyCode) {
+                    else if (min_input.type() == ButtonInput::KeyboardKeyCode) {
                         auto result = std::find(m_keycodes.begin(), m_keycodes.end(), min_input.keycode());
                         min_down = result != m_keycodes.end();
                     }
@@ -64,7 +64,7 @@ namespace sivox {
                     if (max_input.type() == ButtonInput::KeyboardScanCode) {
                         max_down = m_scancodes[static_cast<int>(max_input.scancode())];
                     }
-                    else if (input.type() == ButtonInput::KeyboardKeyCode) {
+                    else if (max_input.type() == ButtonInput::KeyboardKeyCode) {
                         auto result = std::find(m_keycodes.begin(), m_keycodes.end(), max_input.keycode());
                         max_down = result != m_keycodes.end();
                     }
