@@ -40,10 +40,24 @@ namespace sivox {
      */
     class Chunk {
     public:
-        static constexpr int width  = 32;
-        static constexpr int height = 32;
-        static constexpr int length = 32;
+        static constexpr int width_bits = 5;
+        static constexpr int height_bits = 5;
+        static constexpr int length_bits = 5;
+
+        // NOTE: Not sure if (width|height|length)_bits == 0 would work?
+        static_assert(width_bits > 0);
+        static_assert(height_bits > 0);
+        static_assert(length_bits > 0);
+        static_assert(width_bits + height_bits + length_bits <= 32);
+
+        static constexpr int width  = 1 << width_bits;
+        static constexpr int height = 1 << height_bits;
+        static constexpr int length = 1 << length_bits;
         static constexpr int volume = width * length * height;
+
+        static constexpr int width_mask = width - 1;
+        static constexpr int height_mask = height - 1;
+        static constexpr int length_mask = length - 1;
 
         Block block(Position p) const { 
             if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < length) { return m_data[block_index(p)]; }
@@ -113,13 +127,16 @@ namespace sivox {
         std::array<Block, volume> m_data;
 
         static int block_index(Position p) {
-            return p.y + (p.x * height) + (p.z * width * height);
+            auto index = p.y & height_mask;
+            index |= (p.x & width_mask) << height_bits;
+            index |= (p.z & length_mask) << (height_bits + width_bits);
+            return index;
         }
 
         static Position block_position(int index) {
-            int y = (index % (width * height)) % height;
-            int x = ((index % (width * height)) - y) / height;
-            int z = (index - x - y) / (width * height);
+            int x = (index >> height_bits) & width_mask;
+            int y = index & height_mask;
+            int z = (index >> (height_bits + width_bits)) & length_mask;
             return {x, y, z};
         }
     };
