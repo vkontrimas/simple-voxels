@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     std::srand(std::time(nullptr)); // TODO: REMOVE!!!!!!!
     /*
      * - initialize SDL
+     * - set GL attributes
      * - create a window
      * - create an OpenGL context
      * - load OpenGL
@@ -65,6 +66,19 @@ int main(int argc, char *argv[]) {
         std::cerr << "Failed to initialize SDL!" << std::endl;
         return 1;
     }
+
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     SDL_Window *window = SDL_CreateWindow(
         "Simple Voxels (Esc - close, WASD - rotate camera, RF - zoom, I - invert vertical, Chunk[1 - random, 2 - less random, 3 - full, 4 - sine mess, 5 - clear])",
