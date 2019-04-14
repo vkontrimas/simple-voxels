@@ -1,7 +1,7 @@
 #version 330 core
 
-in layout(location = 0) vec3 vert_position;
-in layout(location = 1) vec3 vert_normal;
+layout(location = 0) in vec3 vert_position;
+layout(location = 1) in vec3 vert_normal;
 
 out vec3 vert_color;
 
