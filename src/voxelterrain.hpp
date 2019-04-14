@@ -38,20 +38,20 @@ namespace sivox {
     /*
      * Represents a small volume of the world.
      */
-    template<int WIDTH, int HEIGHT>
-    class ChunkTemplate {
+    class Chunk {
     public:
-        static constexpr int width  = WIDTH;
-        static constexpr int height = HEIGHT;
-        static constexpr int volume = width * width * height;
+        static constexpr int width  = 32;
+        static constexpr int height = 32;
+        static constexpr int length = 32;
+        static constexpr int volume = width * length * height;
 
         Block block(Position p) const { 
-            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < width) { return m_data[block_index(p)]; }
+            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < length) { return m_data[block_index(p)]; }
             else { return 0; }
         }
 
         void set_block(Position p, Block block) {
-            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < width) { m_data[block_index(p)] = block; }
+            if (p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && p.z >= 0 && p.z < length) { m_data[block_index(p)] = block; }
         }
 
         /*
@@ -123,8 +123,6 @@ namespace sivox {
             return {x, y, z};
         }
     };
-
-    using Chunk = ChunkTemplate<32, 32>;
 }
 
 #endif // SIVOX_GAME_VOXELTERRAIN_HPP

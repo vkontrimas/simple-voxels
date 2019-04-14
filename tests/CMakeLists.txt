@@ -6,7 +6,6 @@ set(
     main.cpp
     input.cpp
     voxelterrain.cpp
-    meshgenerator.cpp
     ioutils.cpp
 )
 add_executable(testgame ${TEST_SOURCES})
