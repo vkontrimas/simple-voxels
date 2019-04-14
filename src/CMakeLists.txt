@@ -41,3 +41,13 @@ target_compile_definitions(gametestlib PUBLIC SIVOX_TESTING)
 target_include_directories(gametestlib PUBLIC .)
 target_link_libraries(gametestlib PUBLIC ${GAME_LIBRARIES})
 target_compile_features(gametestlib PRIVATE ${GAME_FEATURES})
+
+# Linux support.
+# Older clang and gcc require linking against some libs for <filesytem> support
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") 
+    target_link_libraries(game PRIVATE stdc++fs)
+    target_link_libraries(gametestlib PRIVATE stdc++fs)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_link_libraries(game PRIVATE c++fs)
+    target_link_libraries(gametestlib PRIVATE c++fs)
+endif()

@@ -14,6 +14,14 @@ add_executable(testgame ${TEST_SOURCES})
 target_link_libraries(testgame PRIVATE Catch2::Catch2 gametestlib)
 target_compile_features(testgame PRIVATE cxx_std_17)
 
+# Linux support.
+# Older clang and gcc require linking against some libs for <filesytem> support
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") 
+    target_link_libraries(testgame PRIVATE stdc++fs)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_link_libraries(testgame PRIVATE c++fs)
+endif()
+
 add_custom_command(
     TARGET testgame
     POST_BUILD
