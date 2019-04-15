@@ -170,6 +170,10 @@ namespace sivox {
     private:
         std::unordered_map<int, std::unique_ptr<Chunk>> m_chunks;
         int m_width_chunks, m_height_chunks, m_length_chunks;
+
+        int chunk_index(Position cp) const {
+            return cp.y + cp.x * height_chunks() + cp.z * width_chunks() * height_chunks();
+        }
     };
 }
 
