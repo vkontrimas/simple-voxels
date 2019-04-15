@@ -1,6 +1,8 @@
 #include <voxelterrain.hpp>
 #include <ostream>
 #include <functional>
+#include <vector>
+#include <algorithm>
 
 using namespace sivox;
 
@@ -157,6 +159,139 @@ TEST_CASE("Chunk : Out of bounds access (sides)", "[terrain][blocks][chunks]") {
             REQUIRE(chunk.block(x_neg) == 0);
             REQUIRE(chunk.block(z_pos) == 0);
             REQUIRE(chunk.block(z_neg) == 0);
+        }
+    }
+}
+
+TEST_CASE("Terrain : size", "[terrain]") {
+    struct Value {
+        int w, h, l;
+
+        int volume() const { return w * h * l; }
+    };
+    std::vector<Value> values = {
+        {1, 2, 3},
+        {2, 2, 2},
+        {32, 32, 32},
+        {64, 64, 64},
+        {10, 20, 30},
+        {30, 20, 10},
+        {512, 32, 512}
+    };
+
+    for (auto val : values) {
+        Terrain terrain(val.w, val.h, val.l);
+        REQUIRE(terrain.width_chunks() == val.w);
+        REQUIRE(terrain.height_chunks() == val.h);
+        REQUIRE(terrain.length_chunks() == val.l);
+        REQUIRE(terrain.volume_chunks() == val.volume());
+        REQUIRE(terrain.width_blocks() == val.w * Chunk::width);
+        REQUIRE(terrain.height_blocks() == val.h * Chunk::height);
+        REQUIRE(terrain.length_blocks() == val.l * Chunk::length);
+        REQUIRE(terrain.volume_blocks() == val.volume() * Chunk::volume);
+    }
+}
+
+TEST_CASE("Terrain : empty after initialization", "[terrain][chunks]") {
+    Terrain terrain(32, 32, 32);
+    Terrain const& const_terrain = terrain;
+
+    for (int z = 0; z < terrain.length_chunks(); ++z) {
+        for (int x = 0; x < terrain.width_chunks(); ++x) {
+            for (int y = 0; y < terrain.height_chunks(); ++y) {
+                REQUIRE(terrain.chunk({x, y, z}) == nullptr);
+                REQUIRE(const_terrain.chunk({x, y, z}) == nullptr);
+            }
+        }
+    }
+}
+
+TEST_CASE("Terrain : chunk lifecycle", "[terrain][chunks]") {
+    Terrain terrain(1, 1, 1);
+    Terrain const& const_terrain = terrain;
+    Position position = {0, 0, 0};
+
+    REQUIRE(terrain.chunk(position) == nullptr);
+    REQUIRE(const_terrain.chunk(position) == nullptr);
+
+    Chunk *created_chunk = terrain.create_chunk(position);
+    REQUIRE(created_chunk != nullptr);
+    REQUIRE(terrain.chunk(position) == created_chunk);
+    REQUIRE(const_terrain.chunk(position) == created_chunk);
+
+    terrain.delete_chunk(position);
+    REQUIRE(terrain.chunk(position) == nullptr);
+    REQUIRE(const_terrain.chunk(position) == nullptr);
+}
+
+TEST_CASE("Terrain : chunk lifecycle (several positions)", "[terrain][chunks]") {
+    Terrain terrain(32, 32, 32);
+    Terrain const& const_terrain = terrain;
+    std::vector<Position> positions = {
+        {0, 0, 0},
+        {1, 1, 1},
+        {20, 30, 10},
+        {5, 6, 9},
+        {17, 20, 0},
+        {15, 4, 19},
+    };
+
+    /*
+     * Create chunks at given positions.
+     */
+    std::vector<Chunk*> created_chunks;
+    for (Position position : positions) {
+        Chunk *chunk = terrain.create_chunk(position);
+        REQUIRE(chunk != nullptr);
+        created_chunks.push_back(chunk);
+    }
+
+    /*
+     * Try retrieving every chunk.
+     * Chunks we created should exist now.
+     * Others should not.
+     */
+    for (int z = 0; z < terrain.length_chunks(); ++z) {
+        for (int x = 0; x < terrain.width_chunks(); ++x) {
+            for (int y = 0; y < terrain.height_chunks(); ++y) {
+                if (std::find(positions.begin(), positions.end(), Position{x, y, z}) == positions.end()) {
+                    REQUIRE(terrain.chunk({x, y, z}) == nullptr);
+                    REQUIRE(const_terrain.chunk({x, y, z}) == nullptr);
+                }
+                else {
+                    REQUIRE_FALSE(terrain.chunk({x, y, z}) == nullptr);
+                    REQUIRE_FALSE(const_terrain.chunk({x, y, z}) == nullptr);
+                }
+            }
+        }
+    }
+
+    /*
+     * Validate newly created chunk pointers.
+     */
+    REQUIRE(positions.size() == created_chunks.size());
+    for (int i = 0; i < positions.size(); ++i) {
+        REQUIRE(terrain.chunk(positions[i]) == created_chunks[i]);
+        REQUIRE(const_terrain.chunk(positions[i]) == created_chunks[i]);
+    }
+
+    /*
+     * Delete chunks.
+     */
+    for (Position position : positions) {
+        terrain.delete_chunk(position);
+    }
+    created_chunks.clear();
+
+    /*
+     * None of the chunks should exist anymore!
+     */
+    for (int z = 0; z < terrain.length_chunks(); ++z) {
+        for (int x = 0; x < terrain.width_chunks(); ++x) {
+            for (int y = 0; y < terrain.height_chunks(); ++y) {
+                REQUIRE(terrain.chunk({x, y, z}) == nullptr);
+                REQUIRE(const_terrain.chunk({x, y, z}) == nullptr);
+            }
         }
     }
 }

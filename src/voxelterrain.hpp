@@ -4,10 +4,16 @@
 
 #include "common.hpp"
 #include <array>
+#include <unordered_map>
+#include <memory>
 
 namespace sivox {
     /*
      * Represents an integer position in the world.
+     *
+     * TODO: Rename to Vec3i or something. This is specifically for voxel terrain though,
+     * so maybe something more voxel-y..?
+     *                                                                  - vk 15/04/2019
      */
     struct Position {
         int x = 0;
@@ -139,6 +145,31 @@ namespace sivox {
             int z = (index >> (height_bits + width_bits)) & length_mask;
             return {x, y, z};
         }
+    };
+
+    class Terrain {
+    public:
+        Terrain(int width_chunks, int height_chunks, int length_chunks) {}
+
+        int width_chunks() const { return m_width_chunks; }
+        int height_chunks() const { return m_height_chunks; }
+        int length_chunks() const { return m_length_chunks; }
+        int volume_chunks() const { return width_chunks() * height_chunks() * length_chunks(); }
+
+        int width_blocks() const { return width_chunks() * Chunk::width; }
+        int height_blocks() const { return height_chunks() * Chunk::height; }
+        int length_blocks() const { return length_chunks() * Chunk::length; }
+        int volume_blocks() const { return width_blocks() * height_blocks() * length_blocks(); }
+
+        Chunk *chunk(Position chunk_position) { return nullptr; }
+        Chunk const* chunk(Position chunk_position) const { return nullptr; }
+
+        Chunk *create_chunk(Position chunk_position) { return nullptr; }
+        void delete_chunk(Position chunk_position) {}
+
+    private:
+        std::unordered_map<int, std::unique_ptr<Chunk>> m_chunks;
+        int m_width_chunks, m_height_chunks, m_length_chunks;
     };
 }
 
