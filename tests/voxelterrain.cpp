@@ -216,6 +216,7 @@ TEST_CASE("Terrain : chunk lifecycle", "[terrain][chunks]") {
 
     Chunk *created_chunk = terrain.create_chunk(position);
     REQUIRE(created_chunk != nullptr);
+    REQUIRE(terrain.create_chunk(position) == created_chunk);
     REQUIRE(terrain.chunk(position) == created_chunk);
     REQUIRE(const_terrain.chunk(position) == created_chunk);
 
@@ -268,9 +269,11 @@ TEST_CASE("Terrain : chunk lifecycle (several positions)", "[terrain][chunks]") 
 
     /*
      * Validate newly created chunk pointers.
+     * (and try creating the same chunks again.)
      */
     REQUIRE(positions.size() == created_chunks.size());
     for (int i = 0; i < positions.size(); ++i) {
+        REQUIRE(terrain.create_chunk(positions[i]) == created_chunks[i]);
         REQUIRE(terrain.chunk(positions[i]) == created_chunks[i]);
         REQUIRE(const_terrain.chunk(positions[i]) == created_chunks[i]);
     }
