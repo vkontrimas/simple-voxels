@@ -149,7 +149,7 @@ namespace sivox {
 
     class Terrain {
     public:
-        Terrain(int width_chunks, int height_chunks, int length_chunks) {}
+        Terrain(int width_chunks, int height_chunks, int length_chunks);
 
         int width_chunks() const { return m_width_chunks; }
         int height_chunks() const { return m_height_chunks; }
@@ -161,11 +161,11 @@ namespace sivox {
         int length_blocks() const { return length_chunks() * Chunk::length; }
         int volume_blocks() const { return width_blocks() * height_blocks() * length_blocks(); }
 
-        Chunk *chunk(Position chunk_position) { return nullptr; }
-        Chunk const* chunk(Position chunk_position) const { return nullptr; }
+        Chunk *chunk(Position chunk_position);
+        Chunk const* chunk(Position chunk_position) const;
 
-        Chunk *create_chunk(Position chunk_position) { return nullptr; }
-        void delete_chunk(Position chunk_position) {}
+        Chunk *create_chunk(Position chunk_position);
+        void delete_chunk(Position chunk_position);
 
     private:
         std::unordered_map<int, std::unique_ptr<Chunk>> m_chunks;

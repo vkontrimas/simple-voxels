@@ -5,6 +5,7 @@ set(
     input.hpp
     input.cpp
     voxelterrain.hpp
+    voxelterrain.cpp
     meshgenerator.hpp
     meshgenerator.cpp
     ioutils.hpp
