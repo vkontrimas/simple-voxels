@@ -4,8 +4,10 @@
 
 #include "common.hpp"
 #include <array>
+#include <vector>
 #include <unordered_map>
 #include <memory>
+#include <glm/glm.hpp>
 
 namespace sivox {
     /*
@@ -20,7 +22,20 @@ namespace sivox {
         int y = 0;
         int z = 0;
 
+        Position() : x(0), y(0), z(0) {}
         Position(int x_, int y_, int z_) : x(x_), y(y_), z(z_) {}
+
+        /*
+         * Returns the chunk position of the chunk the block at [position] is located in.
+         */
+        static Position block_to_chunk(Position position); 
+
+        static float distance(Position a, Position b) {
+            float dx = a.x - b.x;
+            float dy = a.y - b.y;
+            float dz = a.z - b.z;
+            return glm::sqrt(dx * dx + dy * dy + dz * dz);
+        }
     };
 
     inline bool operator==(Position a, Position b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
@@ -147,6 +162,14 @@ namespace sivox {
         }
     };
 
+    inline Position Position::block_to_chunk(Position position) {
+        return { 
+            position.x & Chunk::width_mask, 
+            position.y & Chunk::height_mask,
+            position.z & Chunk::length_mask
+        };
+    }
+
     class Terrain {
     public:
         Terrain(int width_chunks, int height_chunks, int length_chunks);
@@ -164,7 +187,9 @@ namespace sivox {
         Chunk *chunk(Position chunk_position);
         Chunk const* chunk(Position chunk_position) const;
 
+        // TODO: Rename create_chunk to load_chunk and implement generation / loading logic.
         Chunk *create_chunk(Position chunk_position);
+        // TODO: Rename delete_chunk to unload_chunk and implement unloading logic.
         void delete_chunk(Position chunk_position);
 
     private:
@@ -173,6 +198,39 @@ namespace sivox {
 
         int chunk_index(Position cp) const {
             return cp.y + cp.x * height_chunks() + cp.z * width_chunks() * height_chunks();
+        }
+    };
+
+    class LoadedArea {
+    public:
+        LoadedArea(Terrain &terrain, Position center_chunk, int radius_chunks);
+
+        void update_loaded_volume(Position center_chunk) {
+            update_loaded_volume(center_chunk, radius_chunks());
+        }
+
+        void update_loaded_volume(Position center_chunk, int radius_chunks);
+
+        Terrain &terrain() { return m_terrain; }
+        Terrain const& terrain() const { return m_terrain; }
+        int radius_chunks() const { return m_radius_chunks; }
+        int diameter_chunks() const { return 2 * m_radius_chunks; }
+        Position center_chunk() const { return m_center_chunk; }
+
+    private:
+        Terrain &m_terrain;
+        Position m_center_chunk;
+        int m_radius_chunks;
+        std::vector<Chunk*> m_chunks;
+
+        int chunk_index(Position rcp) {
+            Position center = center_chunk();
+            Position cp = {
+                rcp.x + center.x,
+                rcp.y + center.y,
+                rcp.z + center.z
+            };
+            return cp.y + cp.x * diameter_chunks() + cp.z * diameter_chunks() * diameter_chunks();
         }
     };
 }
