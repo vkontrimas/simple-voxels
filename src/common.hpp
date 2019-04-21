@@ -2,19 +2,25 @@
 #ifndef SIVOX_GAME_COMMON_HPP
 #define SIVOX_GAME_COMMON_HPP
 
-/*
- * Used to expose private or protected class members for testing.  
- *
- * Replace the 'private:' or 'protected:' keywords for parts of the code that should be exposed with
- * 'sivox_test(private):' or 'sivox_test(protected):'.
- *
- * When SIVOX_TESTING is defined, the members will be defined as public. When it is not, the members will be defined as
- * the specifier passed into the macro.
- */
-#ifdef SIVOX_TESTING
-#define sivox_test(spec) public
-#else
-#define sivox_test(spec) spec
-#endif /*SIVOX_TESTING*/
+#include <cstdint>
+#include <cstddef>
+
+namespace sivox {
+    using s8   = int8_t;
+    using s16  = int16_t;
+    using s32  = int32_t;
+    using s64  = int64_t;
+
+    using u8   = uint8_t;
+    using u16  = uint16_t;
+    using u32  = uint32_t;
+    using u64  = uint64_t;
+
+    using f32  = float;
+    using f64  = double;
+
+    using size = std::size_t;
+    using ptrsize = std::ptr
+}
 
 #endif /*SIVOX_GAME_COMMON_HPP*/
