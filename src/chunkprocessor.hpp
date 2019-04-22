@@ -2,6 +2,8 @@
 #ifndef SIVOX_GAME_CHUNKPROCESSOR_HPP
 #define SIVOX_GAME_CHUNKPROCESSOR_HPP
 
+#include "common.hpp"
+
 namespace sivox {
     /*
      * Processes chunks as they are created, loaded, generated, updated, unloaded and

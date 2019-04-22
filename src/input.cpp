@@ -9,7 +9,7 @@ namespace sivox {
 
     void InputHandler::keyboard_event(KeyCode keycode, ScanCode scancode, ButtonInput::KeyboardEvent e) {
         bool down = e == ButtonInput::Down;
-        m_scancodes[static_cast<int>(scancode)] = down;
+        m_scancodes[static_cast<s32>(scancode)] = down;
         if (down) {
             m_keycodes.push_back(keycode);
         }
@@ -28,7 +28,7 @@ namespace sivox {
             bool down = false;
             for (ButtonInput const& input : button.inputs) {
                 if (input.type() == ButtonInput::KeyboardScanCode) {
-                    down = m_scancodes[static_cast<int>(input.scancode())];
+                    down = m_scancodes[static_cast<s32>(input.scancode())];
                 }
                 else if (input.type() == ButtonInput::KeyboardKeyCode) {
                     /*
@@ -52,7 +52,7 @@ namespace sivox {
                     auto const& min_input = input.min();
                     bool min_down = false;
                     if (min_input.type() == ButtonInput::KeyboardScanCode) {
-                        min_down = m_scancodes[static_cast<int>(min_input.scancode())];
+                        min_down = m_scancodes[static_cast<s32>(min_input.scancode())];
                     }
                     else if (min_input.type() == ButtonInput::KeyboardKeyCode) {
                         auto result = std::find(m_keycodes.begin(), m_keycodes.end(), min_input.keycode());
@@ -62,14 +62,14 @@ namespace sivox {
                     auto const& max_input = input.max();
                     bool max_down = false;
                     if (max_input.type() == ButtonInput::KeyboardScanCode) {
-                        max_down = m_scancodes[static_cast<int>(max_input.scancode())];
+                        max_down = m_scancodes[static_cast<s32>(max_input.scancode())];
                     }
                     else if (max_input.type() == ButtonInput::KeyboardKeyCode) {
                         auto result = std::find(m_keycodes.begin(), m_keycodes.end(), max_input.keycode());
                         max_down = result != m_keycodes.end();
                     }
 
-                    float value = 0.0f;
+                    f32 value = 0.0f;
                     if (min_down) { value -= 1.0f; }
                     if (max_down) { value += 1.0f; }
 

@@ -2,6 +2,7 @@
 #ifndef SIVOX_GAME_IOUTILS_HPP
 #define SIVOX_GAME_IOUTILS_HPP
 
+#include "common.hpp"
 #include <string>
 #include <filesystem>
 

@@ -2,6 +2,7 @@
 #ifndef SIVOX_GAME_CHUNKBUFFERS_HPP
 #define SIVOX_GAME_CHUNKBUFFERS_HPP
 
+#include "common.hpp"
 #include <array>
 #include <glad/glad.h>
 #include "meshgenerator.hpp"
@@ -44,12 +45,12 @@ namespace sivox {
         GLuint vertex_array() const { return m_vao; }
         GLuint vertex_buffer() const { return m_buffers[0]; }
         GLuint element_buffer() const { return m_buffers[1]; } 
-        int element_count() const { return m_element_count; }
+        s32 element_count() const { return m_element_count; }
 
     private:
         GLuint m_vao;
         std::array<GLuint, 2> m_buffers;
-        int m_element_count;
+        s32 m_element_count;
     };
 }
 #endif // SIVOX_GAME_CHUNKBUFFERS_HPP

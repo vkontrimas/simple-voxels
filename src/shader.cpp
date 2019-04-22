@@ -9,7 +9,9 @@
 namespace fs = std::filesystem;
 
 namespace {
-    constexpr int ERROR_MESSAGE_LENGTH = 1024;
+    using namespace sivox;
+
+    constexpr s32 ERROR_MESSAGE_LENGTH = 1024;
 
     enum class ShaderType {
         Vertex = GL_VERTEX_SHADER,

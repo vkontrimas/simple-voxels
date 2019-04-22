@@ -95,7 +95,7 @@ namespace sivox {
         for (auto block : chunk) {
             if (block.block != 0) {
                 Position p = block.position;
-                int bitmask = BLOCK_SIDES_NONE;
+                s32 bitmask = BLOCK_SIDES_NONE;
                 if (chunk.block({p.x, p.y + 1, p.z}) == 0) { bitmask |= BLOCK_SIDES_TOP; }
                 if (chunk.block({p.x, p.y - 1, p.z}) == 0) { bitmask |= BLOCK_SIDES_BOTTOM; }
                 if (chunk.block({p.x + 1, p.y, p.z}) == 0) { bitmask |= BLOCK_SIDES_RIGHT; }
@@ -103,7 +103,7 @@ namespace sivox {
                 if (chunk.block({p.x, p.y, p.z + 1}) == 0) { bitmask |= BLOCK_SIDES_BACK; }
                 if (chunk.block({p.x, p.y, p.z - 1}) == 0) { bitmask |= BLOCK_SIDES_FRONT; }
 
-                int added_vertices = 0;
+                s32 added_vertices = 0;
 
                 /*
                  * TODO: 
@@ -111,7 +111,7 @@ namespace sivox {
                  * Then we can just look up by passing the [bitmask] directly as the index.
                  */
                 if (bitmask & BLOCK_SIDES_TOP) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_top.begin(), s_block_top.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;
@@ -121,7 +121,7 @@ namespace sivox {
                     }
                 }
                 if (bitmask & BLOCK_SIDES_BOTTOM) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_bottom.begin(), s_block_bottom.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;
@@ -131,7 +131,7 @@ namespace sivox {
                     }
                 }
                 if (bitmask & BLOCK_SIDES_RIGHT) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_right.begin(), s_block_right.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;
@@ -141,7 +141,7 @@ namespace sivox {
                     }
                 }
                 if (bitmask & BLOCK_SIDES_LEFT) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_left.begin(), s_block_left.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;
@@ -151,7 +151,7 @@ namespace sivox {
                     }
                 }
                 if (bitmask & BLOCK_SIDES_FRONT) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_front.begin(), s_block_front.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;
@@ -161,7 +161,7 @@ namespace sivox {
                     }
                 }
                 if (bitmask & BLOCK_SIDES_BACK) {
-                    int triangle_start_index = mesh.vertices.size(); 
+                    s32 triangle_start_index = mesh.vertices.size(); 
                     std::copy(s_block_back.begin(), s_block_back.end(), std::back_inserter(mesh.vertices));
                     std::copy(s_triangles.begin(), s_triangles.end(), std::back_inserter(mesh.triangles));
                     added_vertices += 4;

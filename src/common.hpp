@@ -18,9 +18,6 @@ namespace sivox {
 
     using f32  = float;
     using f64  = double;
-
-    using size = std::size_t;
-    using ptrsize = std::ptr
 }
 
 #endif /*SIVOX_GAME_COMMON_HPP*/

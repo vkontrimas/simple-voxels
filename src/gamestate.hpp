@@ -1,6 +1,7 @@
 #pragma once
 #ifndef SIVOX_GAME_GAMESTATE_HPP
 #define SIVOX_GAME_GAMESTATE_HPP
+
 #include "common.hpp"
 
 namespace sivox {
@@ -8,6 +9,6 @@ namespace sivox {
 
     };
 
-    GameState interpolate(GameState const& a, GameState const& b, double interpolation) { return {}; }
+    GameState interpolate(GameState const& a, GameState const& b, f64 interpolation) { return {}; }
 }
 #endif /*SIVOX_GAME_GAMESTATE_HPP*/

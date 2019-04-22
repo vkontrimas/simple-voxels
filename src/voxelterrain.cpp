@@ -1,7 +1,7 @@
 #include "voxelterrain.hpp"
 
 namespace sivox {
-    Terrain::Terrain(int width_chunks, int height_chunks, int length_chunks) :
+    Terrain::Terrain(s32 width_chunks, s32 height_chunks, s32 length_chunks) :
         m_width_chunks(width_chunks), m_height_chunks(height_chunks), m_length_chunks(length_chunks) {}
 
     Chunk *Terrain::chunk(Position chunk_position) { 
@@ -43,24 +43,24 @@ namespace sivox {
         }
     }
 
-    LoadedArea::LoadedArea(Terrain &terrain, Position center_chunk, int radius_chunks) : m_terrain(terrain) {
+    LoadedArea::LoadedArea(Terrain &terrain, Position center_chunk, s32 radius_chunks) : m_terrain(terrain) {
         update_loaded_volume(center_chunk, radius_chunks);
     }
 
-    void LoadedArea::update_loaded_volume(Position new_center_chunk, int new_radius_chunks) {
+    void LoadedArea::update_loaded_volume(Position new_center_chunk, s32 new_radius_chunks) {
         m_center_chunk = new_center_chunk;
         m_radius_chunks = new_radius_chunks;
         
-        int radius = radius_chunks();
-        int diameter = diameter_chunks();
+        s32 radius = radius_chunks();
+        s32 diameter = diameter_chunks();
 
         m_chunks.resize(diameter * diameter * diameter, nullptr);
 
-        for (int z = 0; z < diameter; ++z) {
-            for (int x = 0; x < diameter; ++x) {
-                for (int y = 0; y < diameter; ++y) {
+        for (s32 z = 0; z < diameter; ++z) {
+            for (s32 x = 0; x < diameter; ++x) {
+                for (s32 y = 0; y < diameter; ++y) {
                     Position position = {x, y, z};
-                    float distance = Position::distance(position, center_chunk());
+                    f32 distance = Position::distance(position, center_chunk());
                     if (distance <= radius) {
                         Chunk *chunk = terrain().chunk(position);
                         if (!chunk) {

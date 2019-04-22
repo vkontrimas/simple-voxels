@@ -2,6 +2,7 @@
 #ifndef SIVOX_GAME_SHADER_HPP
 #define SIVOX_GAME_SHADER_HPP
 
+#include "common.hpp"
 #include <string>
 #include <glad/glad.h>
 

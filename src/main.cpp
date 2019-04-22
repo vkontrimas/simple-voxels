@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "common.hpp" 
 #include "chunkbuffers.hpp"
 #include "gamestate.hpp"
 #include "input.hpp" 
@@ -27,9 +28,9 @@ using namespace sivox;
 
 namespace {
     void foreach_block(Chunk &chunk, std::function<Block(Position pos, Block block)> f) {
-        for (int z = 0; z < Chunk::width; ++z) {
-            for (int x = 0; x < Chunk::width; ++x) {
-                for (int y = 0; y < Chunk::height; ++y) {
+        for (s32 z = 0; z < Chunk::width; ++z) {
+            for (s32 x = 0; x < Chunk::width; ++x) {
+                for (s32 y = 0; y < Chunk::height; ++y) {
                     chunk.set_block({x, y, z}, f({x, y, z}, chunk.block({x, y, z})));
                 }
             }
@@ -37,22 +38,22 @@ namespace {
     }
 
     void sine_mess(Chunk &chunk) {
-        float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-        float rand2 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-        float rand3 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-        float rand4 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+        f32 rand = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+        f32 rand2 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+        f32 rand3 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+        f32 rand4 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
         foreach_block(chunk, [rand,rand2,rand3,rand4](Position p, Block b) { 
-            float zf = static_cast<float>(p.z);
-            float xf = static_cast<float>(p.x);
-            float sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
-            float sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
-            float maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
+            f32 zf = static_cast<f32>(p.z);
+            f32 xf = static_cast<f32>(p.x);
+            f32 sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
+            f32 sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
+            f32 maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
             return p.y <= maxY ? 1 : 0;
         });
     }
 }
 
-int main(int argc, char *argv[]) {
+s32 main(s32 argc, char *argv[]) {
     std::srand(std::time(nullptr)); // TODO: REMOVE!!!!!!!
     /*
      * - initialize SDL
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
      * - create an OpenGL context
      * - load OpenGL
      */
-    int sdl_status = SDL_Init(SDL_INIT_VIDEO);
+    s32 sdl_status = SDL_Init(SDL_INIT_VIDEO);
     if (sdl_status != 0) {
         std::cerr << "Failed to initialize SDL!" << std::endl;
         return 1;
@@ -167,16 +168,16 @@ int main(int argc, char *argv[]) {
         sine_mess(chunk);
         ChunkBuffers buffers(generate_mesh(chunk));
 
-        const float camera_pitch_rate = 45.0f;
-        const float camera_yaw_rate = 45.0f;
-        const float camera_zoom_rate = 20.0f;
+        const f32 camera_pitch_rate = 45.0f;
+        const f32 camera_yaw_rate = 45.0f;
+        const f32 camera_zoom_rate = 20.0f;
 
         bool camera_inverted = false;
 
-        float camera_pitch = -30.0f;
-        float camera_yaw = 45.0f;
-        const float camera_distance = 160.0f;
-        float camera_fov = 40.0f; 
+        f32 camera_pitch = -30.0f;
+        f32 camera_yaw = 45.0f;
+        const f32 camera_distance = 160.0f;
+        f32 camera_fov = 40.0f; 
 
         /*
          * Game loop.
@@ -189,7 +190,7 @@ int main(int argc, char *argv[]) {
          *   | Swap buffers
          * |
          */
-        constexpr int UPDATES_PER_SECOND = 60;
+        constexpr s32 UPDATES_PER_SECOND = 60;
         constexpr double UPDATE_TIME = 1.0 / UPDATES_PER_SECOND;
 
         using clock = std::chrono::high_resolution_clock;
@@ -243,12 +244,12 @@ int main(int argc, char *argv[]) {
                 camera_inverted = !camera_inverted;
             }
 
-            camera_pitch += input.axis(Axis::CameraPitch) * camera_pitch_rate * static_cast<float>(delta) * (camera_inverted ? 1.0f : -1.0f);
+            camera_pitch += input.axis(Axis::CameraPitch) * camera_pitch_rate * static_cast<f32>(delta) * (camera_inverted ? 1.0f : -1.0f);
             camera_pitch = glm::clamp(camera_pitch, -90.0f, 90.0f);
 
-            camera_yaw += input.axis(Axis::CameraYaw) * camera_yaw_rate * static_cast<float>(delta);
+            camera_yaw += input.axis(Axis::CameraYaw) * camera_yaw_rate * static_cast<f32>(delta);
 
-            camera_fov += input.axis(Axis::CameraZoom) * camera_zoom_rate * static_cast<float>(delta);
+            camera_fov += input.axis(Axis::CameraZoom) * camera_zoom_rate * static_cast<f32>(delta);
             camera_fov = glm::clamp(camera_fov, 0.5f, 70.0f);
 
             if (input.button_pressed(Button::ChunkRegen)) {
@@ -264,16 +265,16 @@ int main(int argc, char *argv[]) {
                 buffers.set_mesh(generate_mesh(chunk));
             }
             if (input.button_pressed(Button::ChunkRegenSine)) {
-                float rand = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-                float rand2 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-                float rand3 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
-                float rand4 = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                f32 rand = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+                f32 rand2 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+                f32 rand3 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
+                f32 rand4 = static_cast<f32>(std::rand()) / static_cast<f32>(RAND_MAX);
                 foreach_block(chunk, [rand,rand2,rand3,rand4](Position p, Block b) { 
-                    float zf = static_cast<float>(p.z);
-                    float xf = static_cast<float>(p.x);
-                    float sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
-                    float sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
-                    float maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
+                    f32 zf = static_cast<f32>(p.z);
+                    f32 xf = static_cast<f32>(p.x);
+                    f32 sinZ = glm::sin(glm::radians(180 * rand + 180.0f * rand2 * (zf / 31.0f)));
+                    f32 sinX = glm::sin(glm::radians(180 * rand3 + 180.0f * rand4 * (xf / 31.0f)));
+                    f32 maxY = 10 + glm::clamp(20 * sinZ * sinX, 0.0f, 20.0f);
                     return p.y <= maxY ? 1 : 0;
                 });
                 buffers.set_mesh(generate_mesh(chunk));

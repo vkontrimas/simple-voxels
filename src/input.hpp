@@ -1,8 +1,8 @@
 #pragma once
 #ifndef SIVOX_GAME_INPUT_HPP
 #define SIVOX_GAME_INPUT_HPP
-#include "common.hpp"
 
+#include "common.hpp"
 #include <array>
 #include <vector>
 #include <cassert>
@@ -698,7 +698,7 @@ namespace sivox {
         void update();
 
         template<class T> inline void map_axis(T axis, AxisInput input) {
-            int index = static_cast<int>(axis);
+            s32 index = static_cast<s32>(axis);
             assert(index >= 0);
             if (index >= 0) {
                 if (index >= m_axes.size()) {
@@ -722,7 +722,7 @@ namespace sivox {
         }
 
         template<class T> inline float axis(T axis) {
-            int index = static_cast<int>(axis);
+            s32 index = static_cast<s32>(axis);
             if (index >= 0 && index < m_axes.size()) {
                 return m_axes[index].latest_value;
             }
@@ -732,7 +732,7 @@ namespace sivox {
         }
 
         template<class T> inline void map_button(T button, ButtonInput input) {
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             assert(index >= 0);
             if (index >= 0) {
                 if (index >= m_buttons.size()) {
@@ -752,27 +752,27 @@ namespace sivox {
         }
 
         template<class T> inline bool button_down(T button) const {
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             return index >= 0 && index < m_buttons.size() && m_buttons[index].down;
         }
 
         template<class T> inline bool button_up(T button) const {
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             return index >= 0 && index < m_buttons.size() && !m_buttons[index].down;
         }
 
         template<class T> inline bool button_pressed(T button) const {
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             return index >= 0 && index < m_buttons.size() && m_buttons[index].down && !m_buttons[index].down_previously;
         }
 
         template<class T> inline bool button_released(T button) const {
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             return index >= 0 && index < m_buttons.size() && !m_buttons[index].down && m_buttons[index].down_previously;
         }
         
         template<class T> inline std::vector<ButtonInput> const& button_inputs(T button) const { 
-            int index = static_cast<int>(button);
+            s32 index = static_cast<s32>(button);
             if (index >= 0 && index < m_buttons.size()) { return m_buttons[index].inputs; }
             else { return m_empty_input_vec; }
         }
@@ -800,7 +800,7 @@ namespace sivox {
         };
         std::vector<AxisMapping> m_axes;
 
-        std::array<bool, static_cast<int>(ScanCode::Count)> m_scancodes;
+        std::array<bool, static_cast<s32>(ScanCode::Count)> m_scancodes;
         std::vector<KeyCode> m_keycodes;
     };
 }
