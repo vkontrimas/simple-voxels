@@ -1,6 +1,8 @@
 # simple-voxels
 A simple voxel engine.
 
+![A screenshot from the game.](screenshot.jpg)
+
 ## Dependencies
 This project uses git submodules to manage dependencies. Run the following commands after cloning to download them.
 ```
