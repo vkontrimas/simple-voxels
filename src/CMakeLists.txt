@@ -45,10 +45,7 @@ target_compile_features(gametestlib PRIVATE ${GAME_FEATURES})
 
 # Linux support.
 # Older clang and gcc require linking against some libs for <filesytem> support
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
     target_link_libraries(game PRIVATE stdc++fs)
     target_link_libraries(gametestlib PRIVATE stdc++fs)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_link_libraries(game PRIVATE c++fs)
-    target_link_libraries(gametestlib PRIVATE c++fs)
 endif()
